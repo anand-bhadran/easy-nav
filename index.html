@@ -1,0 +1,714 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Easy Nav</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImciIHgxPSIyMiIgeTE9IjAiIHgyPSI3OCIgeTI9IjAiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj48c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiMwYThhOGYiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiM3Y2NmM2EiLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgcng9IjIyIiBmaWxsPSIjZmZmZmZmIi8+PGcgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZTRlY2U5IiBzdHJva2UtbGluZWNhcD0icm91bmQiPjxwYXRoIGQ9Ik0wIDY2TDEwMCA1OCIgc3Ryb2tlLXdpZHRoPSI3Ii8+PHBhdGggZD0iTTY2IDBMNzIgMTAwIiBzdHJva2Utd2lkdGg9IjYiLz48L2c+PHBhdGggZD0iTTI3IDQwUTUwIDkyIDczIDQwIiBmaWxsPSJub25lIiBzdHJva2U9InVybCgjZykiIHN0cm9rZS13aWR0aD0iMTEiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjxjaXJjbGUgY3g9IjI3IiBjeT0iMzYiIHI9IjExIiBmaWxsPSIjMGE4YThmIi8+PGNpcmNsZSBjeD0iNzMiIGN5PSIzNiIgcj0iMTEiIGZpbGw9IiM3Y2NmM2EiLz48Y2lyY2xlIGN4PSI3MyIgY3k9IjM2IiByPSI0LjIiIGZpbGw9IiNmZmZmZmYiLz48L3N2Zz4=">
+<link rel="apple-touch-icon" href="favicon.svg">
+<meta name="description" content="A calm, clutter-free map with custom routes that take you past the gate to the right building, entrance and parking spot.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&display=swap" rel="stylesheet">
+<style>
+/* Layout idea: a 3D city plate under a drawing route anchors the hero; everything below is a single calm column of wide, low-contrast bands. */
+:root{
+  color-scheme: light;
+  --ink:#fbf8f1;          /* page base, as in the app */
+  --surface:#ffffff;
+  --surface-2:#f4f1ff;
+  --purple:#6c5ce7;
+  --purple-2:#4b3fa8;
+  --teal:#0a8a8f;
+  --lime:#5a9e22;
+  --text:#1b1b18;
+  --muted:#55534b;
+  --line:#ddd6c6;
+  --display:'Bricolage Grotesque','Trebuchet MS',system-ui,sans-serif;
+  --body:'Atkinson Hyperlegible','Segoe UI',system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--ink);
+  color:var(--text);
+  font-family:var(--body);
+  font-size:17px;
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+h1,h2,h3{font-family:var(--display);font-weight:700;text-wrap:balance;margin:0;line-height:1.08}
+p{margin:0}
+a{color:var(--purple)}
+a:focus-visible,button:focus-visible{outline:3px solid var(--purple-2);outline-offset:3px;border-radius:6px}
+.wrap{max-width:1140px;margin:0 auto;padding:0 24px;width:100%}
+.eyebrow{font-size:14px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--purple-2)}
+
+/* ---------- nav ---------- */
+.nav{position:fixed;top:0;left:0;right:0;z-index:40;backdrop-filter:blur(14px);background:rgba(251,248,241,.86);border-bottom:1px solid var(--line)}
+.nav .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:66px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:11px;text-decoration:none;color:var(--text);font-family:var(--display);font-weight:800;font-size:20px;letter-spacing:-.01em}
+.navlinks{display:flex;align-items:center;gap:26px;flex-wrap:wrap}
+.navlinks a:not(.btn){color:var(--muted);text-decoration:none;font-size:15px;font-weight:700}
+.navlinks a.btn-primary{color:#fff;text-decoration:none}
+.navlinks a:not(.btn):hover{color:var(--text)}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:50px;padding:0 24px;border-radius:999px;font-weight:700;text-decoration:none;font-size:16px;border:2px solid transparent;transition:transform .18s ease,box-shadow .18s ease,background .18s ease}
+.btn-primary{background:linear-gradient(100deg,var(--purple),var(--purple-2));color:#fff;box-shadow:0 10px 30px -12px rgba(108,92,231,.8)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 16px 38px -12px rgba(143,134,242,.95)}
+.btn-ghost{border-color:var(--purple);color:var(--purple);background:#fff}
+.btn-ghost:hover{border-color:var(--purple-2);color:var(--purple-2);transform:translateY(-2px)}
+.btn-sm{min-height:42px;padding:0 18px;font-size:15px}
+
+/* ---------- hero ---------- */
+.hero{position:relative;padding:150px 0 96px;min-height:min(94vh,800px);display:flex;align-items:center}
+#scene{position:absolute;inset:0;width:100%;height:100%;display:block;z-index:0}
+.hero::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:radial-gradient(760px 540px at 10% 44%,rgba(251,248,241,.97),rgba(251,248,241,.72) 48%,rgba(251,248,241,0) 76%),
+             radial-gradient(700px 500px at 74% 48%,rgba(108,92,231,.1),rgba(108,92,231,0) 70%),
+             linear-gradient(to bottom,rgba(251,248,241,.9),rgba(251,248,241,0) 26%,rgba(251,248,241,.96))}
+.hero .wrap{position:relative;z-index:2}
+.hero-copy{max-width:36rem;display:flex;flex-direction:column;gap:22px}
+h1{font-size:clamp(2.9rem,7.2vw,5rem);font-weight:800;letter-spacing:-.035em}
+h1 .grad{background:linear-gradient(100deg,#0a8a8f,#4a8f14);-webkit-background-clip:text;background-clip:text;color:transparent}
+.lede{font-size:1.19rem;color:var(--muted);max-width:33rem}
+.cta-row{display:flex;flex-wrap:wrap;gap:14px}
+.hero-note{display:inline-flex;align-items:center;gap:10px;font-size:14.5px;color:var(--muted)}
+.dot{width:9px;height:9px;border-radius:50%;background:#5a9e22;box-shadow:0 0 0 4px rgba(90,158,34,.18)}
+
+/* ---------- sections ---------- */
+section{position:relative}
+.band{padding:94px 0;border-top:1px solid var(--line)}
+.band-raise{background:#fff}
+.head{display:flex;flex-direction:column;gap:14px;max-width:46rem;margin-bottom:48px}
+h2{font-size:clamp(2rem,4.2vw,2.9rem);letter-spacing:-.025em}
+.head p{font-size:1.14rem;color:var(--muted)}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(248px,1fr));gap:20px}
+.card{position:relative;padding:30px 28px 32px;border-radius:20px;background:#fff;border:1px solid var(--line);box-shadow:0 10px 26px -20px rgba(27,27,24,.5);display:flex;flex-direction:column;gap:12px;transform-style:preserve-3d;transition:transform .25s cubic-bezier(.2,.7,.3,1),border-color .25s ease}
+.card:hover{border-color:var(--purple);box-shadow:0 18px 36px -22px rgba(108,92,231,.6)}
+.card h3{font-size:1.26rem}
+.card p{color:var(--muted);font-size:16px}
+.ico{width:46px;height:46px;border-radius:13px;display:flex;align-items:center;justify-content:center;background:#eef6e3;border:1px solid #cbe3ab;transform:translateZ(34px)}
+.card h3,.card p{transform:translateZ(16px)}
+
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(258px,1fr));gap:26px}
+.step{display:flex;flex-direction:column;gap:12px}
+.num{width:54px;height:54px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--display);font-weight:800;font-size:1.3rem;color:#fff;background:linear-gradient(140deg,var(--purple),var(--purple-2))}
+.step h3{font-size:1.2rem}
+.step p{color:var(--muted);font-size:16px}
+
+/* ---------- route / phone split ---------- */
+.split{display:flex;flex-wrap:wrap;gap:56px;align-items:center}
+.split-copy{flex:1 1 400px;min-width:0;display:flex;flex-direction:column;gap:18px}
+.split-art{flex:1 1 300px;display:flex;justify-content:center;perspective:1300px}
+
+/* --- phone mockups, drawn in the app's own colours --- */
+.screens{display:grid;grid-template-columns:repeat(auto-fit,minmax(252px,1fr));gap:30px;margin-top:52px;perspective:1600px;
+  padding:52px 30px 40px;border-radius:28px;border:1px solid #ddd7f7;
+  background:radial-gradient(700px 320px at 50% 0%,rgba(108,92,231,.14),rgba(108,92,231,0) 70%),linear-gradient(165deg,#f1eeff,#e7e3fb)}
+@media (max-width:620px){.screens{padding:34px 16px 28px}}
+.shot{display:flex;flex-direction:column;align-items:center;gap:16px}
+.phone{
+  --ap:#6c5ce7; --ap-dark:#4b3fa8; --abg:#fbf8f1; --aink:#1b1b18; --amuted:#55534b;
+  --aline:#ddd6c6; --aamber:#f2a900; --astar:#c97a00; --apoint:#1a73e8; --asight:#1e8e3e; --ared:#d9480f;
+  position:relative;width:262px;border-radius:38px;padding:10px;
+  background:linear-gradient(150deg,#3b3d4c,#16171f 22%,#101119 78%,#343644);
+  box-shadow:0 30px 56px -28px rgba(27,27,24,.55),0 0 0 1px rgba(27,27,24,.12),inset 0 0 0 1px rgba(255,255,255,.1);
+  transition:transform .5s cubic-bezier(.2,.7,.3,1);
+  font-family:'Lexend',var(--body);
+}
+.shot:nth-child(1) .phone{transform:rotateY(13deg) rotateX(5deg)}
+.shot:nth-child(2) .phone{transform:rotateY(0deg) rotateX(5deg) translateY(-14px)}
+.shot:nth-child(3) .phone{transform:rotateY(-13deg) rotateX(5deg)}
+.shot:hover .phone{transform:rotateY(0) rotateX(0) translateY(-18px)}
+/* punch-hole camera, side keys and the gesture bar make it read as a handset */
+.phone::before{content:"";position:absolute;z-index:6;top:21px;left:50%;transform:translateX(-50%);width:7px;height:7px;border-radius:50%;background:#05060a;box-shadow:0 0 0 1.5px rgba(255,255,255,.18)}
+.phone::after{content:"";position:absolute;right:-3px;top:104px;width:3px;height:40px;border-radius:0 4px 4px 0;background:linear-gradient(#484b5b,#1d1f29);
+  box-shadow:0 56px 0 0 #3b3e4d,0 56px 0 0 rgba(0,0,0,0);}
+.vol{position:absolute;right:-3px;top:160px;width:3px;height:66px;border-radius:0 4px 4px 0;background:linear-gradient(#484b5b,#1d1f29)}
+.screen{position:relative;border-radius:30px;overflow:hidden;background:var(--abg);color:var(--aink);display:flex;flex-direction:column;height:452px}
+.screen::after{content:"";position:absolute;z-index:6;left:50%;bottom:6px;transform:translateX(-50%);width:86px;height:4px;border-radius:99px;background:rgba(27,27,24,.4)}
+.a-top{flex:none;padding:26px 13px 11px;display:flex;align-items:center;justify-content:space-between;gap:9px;color:#fff;background:linear-gradient(100deg,#6c5ce7 45%,#8a6ce6 74%,#f0a35e 125%)}
+.a-brand{display:flex;align-items:center;gap:9px;min-width:0}
+.a-brand svg{flex:none;width:30px;height:30px;border-radius:9px;box-shadow:0 0 0 2px rgba(255,255,255,.85)}
+.a-brand b{display:block;font-size:15px;line-height:1.1;font-weight:700}
+.a-brand small{display:block;font-size:11px;opacity:.92}
+.a-lang{flex:none;width:26px;height:26px;border-radius:50%;background:#fff;color:var(--ap);font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.a-back{font-size:13px;font-weight:700;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.5);padding:6px 14px;border-radius:999px}
+.a-body{flex:1;min-height:0;position:relative;display:flex;flex-direction:column}
+.a-search{position:absolute;top:10px;left:10px;right:10px;z-index:3;display:flex;align-items:center;gap:7px}
+.a-field{flex:1;background:#fff;border:1px solid var(--aline);border-radius:11px;padding:8px 11px;font-size:12px;color:#8b887e;white-space:nowrap;overflow:hidden}
+.a-btn{flex:none;width:31px;height:31px;border-radius:50%;background:#fff;border:1px solid var(--aline);display:flex;align-items:center;justify-content:center}
+.a-map{position:absolute;inset:0;background:#f1efe8}
+.a-recent{position:absolute;left:14px;right:14px;bottom:18px;z-index:3;background:var(--ap);color:#fff;border-radius:11px;text-align:center;padding:9px;font-size:12.5px;font-weight:700}
+.a-sheet{position:absolute;left:0;right:0;bottom:0;z-index:4;background:#fffdf6;border-top:1px solid var(--aline);border-radius:16px 16px 0 0;padding:13px 13px 22px;display:flex;flex-direction:column;gap:8px;box-shadow:0 -14px 34px -18px rgba(0,0,0,.4)}
+.a-grab{width:34px;height:4px;border-radius:99px;background:var(--aline);margin:0 auto 3px}
+.a-sheet h4{margin:0;font-size:13.5px;display:flex;align-items:center;gap:7px;color:var(--aink);font-family:'Lexend',var(--body)}
+.a-input{background:#fff;border:1px solid var(--aline);border-radius:9px;padding:8px 10px;font-size:12.5px}
+.a-addr{font-size:10.5px;color:var(--amuted)}
+.a-two{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.a-pill{border-radius:9px;padding:8px;text-align:center;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:5px}
+.a-fav{background:var(--aamber);color:#3a2a00}
+.a-point{background:#fff;border:1px solid var(--apoint);color:var(--apoint)}
+.a-go{background:var(--ap);color:#fff;border-radius:9px;padding:9px;text-align:center;font-size:12.5px;font-weight:700}
+.a-remove{background:#fff;border:1px solid var(--ared);color:var(--ared);border-radius:9px;padding:8px;text-align:center;font-size:12px;font-weight:700}
+.a-close{background:#fff;border:1px solid var(--aline);color:var(--ap);border-radius:9px;padding:8px;text-align:center;font-size:12px;font-weight:700}
+.a-dir{padding:12px 12px 20px;display:flex;flex-direction:column;gap:8px;overflow:hidden}
+.a-stat{font-size:12px;color:var(--amuted)}
+.a-stat b{font-size:19px;color:var(--ap);font-weight:700}
+.a-start{background:var(--ap);color:#fff;border-radius:9px;padding:9px;text-align:center;font-size:12.5px;font-weight:700}
+.a-hint{font-size:10px;color:var(--amuted);text-align:center}
+.a-hide{background:#fff;border:1px solid var(--ap);color:var(--ap);border-radius:9px;padding:8px;text-align:center;font-size:12px;font-weight:700}
+.a-turn{display:flex;gap:9px;align-items:flex-start;padding:8px 0;border-top:1px solid var(--aline)}
+.a-turn:first-of-type{border-top:0}
+.a-turn small{display:block;font-size:10px;color:var(--amuted)}
+.a-turn b{display:block;font-size:12px;font-weight:700;line-height:1.3}
+.shot figcaption{font-size:15px;font-weight:700;color:var(--purple-2);text-align:center}
+
+.chips{display:flex;flex-wrap:wrap;gap:11px}
+.pill{display:inline-flex;align-items:center;gap:9px;min-height:44px;padding:0 18px;border-radius:999px;border:1px solid var(--line);background:#fff;font-size:15px;font-weight:700;color:var(--muted)}
+.pill.on{color:#fff;background:linear-gradient(100deg,var(--teal),var(--lime));border-color:transparent}
+
+.closer{padding:92px 0;border-top:1px solid var(--line);background:linear-gradient(130deg,#6c5ce7 40%,#8a6ce6 72%,#f0a35e 125%);color:#fff}
+.closer .lede{color:rgba(255,255,255,.92)}
+.closer .btn-primary{background:#fff;color:var(--purple-2);box-shadow:0 10px 30px -12px rgba(0,0,0,.5)}
+.closer .btn-ghost{background:transparent;border-color:rgba(255,255,255,.75);color:#fff}
+.closer .btn-ghost:hover{border-color:#fff;color:#fff}
+.closer .wrap{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:30px}
+.closer h2{max-width:20rem}
+footer{border-top:1px solid var(--line);background:#fff;padding:30px 0;font-size:15px;color:var(--muted)}
+footer .wrap{display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between}
+footer a{color:var(--muted);text-decoration:none}
+footer a:hover{color:var(--purple)}
+
+.reveal{opacity:0;transform:translateY(26px);transition:opacity .7s ease,transform .7s cubic-bezier(.2,.7,.3,1)}
+.reveal.in{opacity:1;transform:none}
+
+@media (max-width:620px){
+  .hero{padding:124px 0 68px;min-height:540px}
+  .navlinks a:not(.btn){display:none}
+  .band{padding:70px 0}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+  .reveal{opacity:1;transform:none}
+  .phone{transform:none}
+}
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="wrap">
+    <a class="brand" href="#top">
+      <svg width="34" height="34" viewBox="0 0 100 100" aria-hidden="true"><defs><linearGradient id="lg" x1="22" y1="0" x2="78" y2="0" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#19a8a6"/><stop offset="1" stop-color="#8ed33f"/></linearGradient></defs><rect x="2" y="2" width="96" height="96" rx="24" fill="#ffffff" stroke="#dde9e6" stroke-width="2"/><path d="M27 40Q50 92 73 40" fill="none" stroke="url(#lg)" stroke-width="10" stroke-linecap="round"/><circle cx="27" cy="36" r="9" fill="#19a8a6"/><circle cx="73" cy="36" r="9" fill="#8ed33f"/><circle cx="73" cy="36" r="3.4" fill="#06201c"/></svg>
+      Easy Nav
+    </a>
+    <nav class="navlinks" aria-label="Main">
+      <a href="#what">What it does</a>
+      <a href="#inside">Past the gate</a>
+      <a href="#next">What's next</a>
+      <a class="btn btn-primary btn-sm" href="#test">Join the test</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero" id="top">
+  <canvas id="scene" aria-hidden="true"></canvas>
+  <div class="wrap">
+    <div class="hero-copy">
+      <p class="eyebrow">Clean maps · Routes to the door</p>
+      <h1>Your map.<br><span class="grad">Your way.</span></h1>
+      <p class="lede">Most map apps show you everything at once. Easy Nav shows the road you need and keeps going after the gate, to the right building, entrance and parking spot.</p>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="#test">Join the test group</a>
+        <a class="btn btn-ghost" href="#what">See what it does</a>
+      </div>
+      <span class="hero-note"><span class="dot"></span> In limited testing on Android · English and Malayalam</span>
+    </div>
+  </div>
+</section>
+
+<section class="band" id="what">
+  <div class="wrap">
+    <div class="head reveal">
+      <p class="eyebrow">What it does</p>
+      <h2>Maps without the noise</h2>
+      <p>No sponsored pins, no review badges, no twelve layers of detail. Large type, few choices, and a route you can follow at a glance — whether you drive here every day or have never seen the place.</p>
+    </div>
+    <div class="grid">
+      <article class="card reveal tilt">
+        <span class="ico"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="#8ed33f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M3 12h12M3 18h7"/></svg></span>
+        <h3>Only what matters</h3>
+        <p>Main roads and the places people actually ask for. Everything else stays off the screen.</p>
+      </article>
+      <article class="card reveal tilt">
+        <span class="ico"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="#8ed33f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h9M8 3v2M5 9c2 4 5 6 8 7M11 5c-1 5-4 8-7 10"/><path d="M13 21l4-10 4 10M14.5 17h5"/></svg></span>
+        <h3>Switch language in a tap</h3>
+        <p>English and Malayalam today, with more as the map grows. Place names read the way people say them.</p>
+      </article>
+      <article class="card reveal tilt">
+        <span class="ico"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="#8ed33f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="8"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2"/></svg></span>
+        <h3>Starts where you stand</h3>
+        <p>Picks up your location and shows the road to take. One button turns on spoken directions.</p>
+      </article>
+      <article class="card reveal tilt">
+        <span class="ico"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="#8ed33f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21V8l5-3 5 3v13"/><path d="M13 21V11l4-2 4 2v10"/><path d="M6 12h3M6 16h3"/></svg></span>
+        <h3>Routes drawn by hand</h3>
+        <p>Hospitals and apartment compounds get a route someone walked first, not one guessed from satellite data.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="band" id="inside">
+  <div class="wrap">
+    <div class="split-copy reveal" style="max-width:48rem">
+      <p class="eyebrow">Past the gate</p>
+      <h2>The last two hundred metres</h2>
+      <p class="lede">A normal map drops you at the entrance and stops. That is exactly where most people get lost — in a hospital block, a tech park, a gated compound with eleven towers and one visitor gate that is open.</p>
+      <p class="lede">Easy Nav keeps going: which gate, which tower, which lift, where to leave the car. Step by step, in plain words.</p>
+      <div class="chips">
+        <span class="pill on">Gate</span><span class="pill on">Tower</span><span class="pill on">Parking</span><span class="pill">Lift</span>
+      </div>
+    </div>
+    <div class="screens">
+
+      <figure class="shot reveal">
+        <div class="phone"><span class="vol"></span><div class="screen">
+          <div class="a-top"><div class="a-brand"><svg viewBox="0 0 100 100" aria-hidden="true"><defs><linearGradient id="lg1" x1="22" y1="0" x2="78" y2="0" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#0a8a8f"/><stop offset="1" stop-color="#7ccf3a"/></linearGradient></defs><rect x=".5" y=".5" width="99" height="99" rx="22" fill="#fff" stroke="#dde9e6"/><g fill="none" stroke="#e0eae7" stroke-linecap="round"><path d="M0 18L100 29" stroke-width="3"/><path d="M0 64L100 57" stroke-width="6"/><path d="M30 0L23 100" stroke-width="3"/><path d="M63 0L70 100" stroke-width="5"/><path d="M88 0L94 100" stroke-width="2.5"/></g><path d="M27 40Q50 92 73 40" fill="none" stroke="url(#lg1)" stroke-width="9" stroke-linecap="round"/><circle cx="27" cy="36" r="9" fill="#0a8a8f"/><circle cx="73" cy="36" r="9" fill="#7ccf3a"/><circle cx="73" cy="36" r="3.5" fill="#fff"/></svg><span><b>Easy Nav</b><small>Good afternoon</small></span></div><span class="a-lang">മ</span></div>
+          <div class="a-body">
+            <svg class="a-map" viewBox="0 0 260 400" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="260" height="400" fill="#f1efe8"/><g stroke="#e2dfd4" fill="none" stroke-linecap="round"><path d="M-10 92L270 76" stroke-width="11"/><path d="M-10 236L270 258" stroke-width="14"/><path d="M64 -10L48 410" stroke-width="10"/><path d="M178 -10L196 410" stroke-width="12"/><path d="M-10 330L270 318" stroke-width="7"/><path d="M118 -10L126 410" stroke-width="6"/><path d="M-10 160L270 174" stroke-width="6"/></g><path d="M-10 404Q70 300 120 250" stroke="#cfe3f5" stroke-width="20" fill="none"/><path d="M56 300L56 170L186 170L186 96" stroke="#6c5ce7" stroke-width="4.5" fill="none" stroke-dasharray="9 7" stroke-linecap="round"/><circle cx="56" cy="300" r="11" fill="#fff" stroke="#c97a00" stroke-width="3"/><text x="56" y="305" text-anchor="middle" font-size="12" fill="#c97a00">★</text><circle cx="118" cy="170" r="11" fill="#fff" stroke="#6c5ce7" stroke-width="3"/><text x="118" y="175" text-anchor="middle" font-size="11" font-family="sans-serif" fill="#6c5ce7">4</text><circle cx="186" cy="96" r="12" fill="#fff" stroke="#1e8e3e" stroke-width="3"/><text x="186" y="101" text-anchor="middle" font-size="12" fill="#1e8e3e">⚑</text><circle cx="92" cy="352" r="10" fill="#fff" stroke="#1a73e8" stroke-width="3"/><text x="92" y="357" text-anchor="middle" font-size="10" font-family="sans-serif" fill="#1a73e8">2</text></svg>
+            <div class="a-search">
+              <span class="a-field">Search for a place…</span>
+              <span class="a-btn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#6c5ce7" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7M5 10v10h14V10"/></svg></span>
+              <span class="a-btn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#6c5ce7" stroke-width="2.2" stroke-linecap="round"><path d="M4 9q8 15 16 0"/><circle cx="4" cy="8" r="1.8" fill="#6c5ce7"/><circle cx="20" cy="8" r="1.8" fill="#6c5ce7"/></svg></span>
+              <span class="a-btn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#6c5ce7" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.4"/><path d="M5 20c1.4-4 11.6-4 13 0"/></svg></span>
+            </div>
+            <div class="a-recent">◴ Recent</div>
+          </div>
+        </div></div>
+        <figcaption>Your places and routes, nothing else</figcaption>
+      </figure>
+
+      <figure class="shot reveal">
+        <div class="phone"><span class="vol"></span><div class="screen">
+          <div class="a-top"><div class="a-brand"><svg viewBox="0 0 100 100" aria-hidden="true"><defs><linearGradient id="lg1" x1="22" y1="0" x2="78" y2="0" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#0a8a8f"/><stop offset="1" stop-color="#7ccf3a"/></linearGradient></defs><rect x=".5" y=".5" width="99" height="99" rx="22" fill="#fff" stroke="#dde9e6"/><g fill="none" stroke="#e0eae7" stroke-linecap="round"><path d="M0 18L100 29" stroke-width="3"/><path d="M0 64L100 57" stroke-width="6"/><path d="M30 0L23 100" stroke-width="3"/><path d="M63 0L70 100" stroke-width="5"/><path d="M88 0L94 100" stroke-width="2.5"/></g><path d="M27 40Q50 92 73 40" fill="none" stroke="url(#lg1)" stroke-width="9" stroke-linecap="round"/><circle cx="27" cy="36" r="9" fill="#0a8a8f"/><circle cx="73" cy="36" r="9" fill="#7ccf3a"/><circle cx="73" cy="36" r="3.5" fill="#fff"/></svg><span><b>Easy Nav</b><small>Good afternoon</small></span></div><span class="a-lang">മ</span></div>
+          <div class="a-body">
+            <svg class="a-map" viewBox="0 0 260 400" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="260" height="400" fill="#f1efe8"/><g stroke="#e2dfd4" fill="none" stroke-linecap="round"><path d="M-10 92L270 76" stroke-width="11"/><path d="M-10 236L270 258" stroke-width="14"/><path d="M64 -10L48 410" stroke-width="10"/><path d="M178 -10L196 410" stroke-width="12"/><path d="M-10 330L270 318" stroke-width="7"/><path d="M118 -10L126 410" stroke-width="6"/><path d="M-10 160L270 174" stroke-width="6"/></g><path d="M-10 404Q70 300 120 250" stroke="#cfe3f5" stroke-width="20" fill="none"/><path d="M56 300L56 170L186 170L186 96" stroke="#6c5ce7" stroke-width="4.5" fill="none" stroke-dasharray="9 7" stroke-linecap="round"/><circle cx="56" cy="300" r="11" fill="#fff" stroke="#c97a00" stroke-width="3"/><text x="56" y="305" text-anchor="middle" font-size="12" fill="#c97a00">★</text><circle cx="118" cy="170" r="11" fill="#fff" stroke="#6c5ce7" stroke-width="3"/><text x="118" y="175" text-anchor="middle" font-size="11" font-family="sans-serif" fill="#6c5ce7">4</text><circle cx="186" cy="96" r="12" fill="#fff" stroke="#1e8e3e" stroke-width="3"/><text x="186" y="101" text-anchor="middle" font-size="12" fill="#1e8e3e">⚑</text><circle cx="92" cy="352" r="10" fill="#fff" stroke="#1a73e8" stroke-width="3"/><text x="92" y="357" text-anchor="middle" font-size="10" font-family="sans-serif" fill="#1a73e8">2</text></svg>
+            <div class="a-search"><span class="a-field">Search for a place…</span>
+              <span class="a-btn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#6c5ce7" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7M5 10v10h14V10"/></svg></span>
+            </div>
+            <div class="a-sheet">
+              <span class="a-grab"></span>
+              <h4><span style="color:#1e8e3e">★</span> Saved place</h4>
+              <div class="a-input">City Hospital</div>
+              <p class="a-addr">Main Road, North Ward</p>
+              <div class="a-two"><span class="a-pill a-fav">★ Favorite</span><span class="a-pill a-point">◉ Point</span></div>
+              <div class="a-go">Go here</div>
+              <div class="a-remove"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#d9480f" stroke-width="2.2" stroke-linecap="round" style="vertical-align:-1px"><path d="M4 7h16M10 4h4M6 7l1 13h10l1-13M10 11v6M14 11v6"/></svg> Remove from saved</div>
+              <div class="a-close">Close</div>
+            </div>
+          </div>
+        </div></div>
+        <figcaption>Save any place in one tap</figcaption>
+      </figure>
+
+      <figure class="shot reveal">
+        <div class="phone"><span class="vol"></span><div class="screen">
+          <div class="a-top"><span class="a-back">‹ Back</span><span class="a-lang">മ</span></div>
+          <div class="a-body"><div class="a-dir">
+            <p class="a-stat"><b>13.8</b> km &nbsp; <b>19</b> min by car</p>
+            <div class="a-start">▶ Start navigation</div>
+            <p class="a-hint">Speaks each turn out loud as you go.</p>
+            <div class="a-hide">Hide the turns (30)</div>
+            <div class="a-turn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#1e8e3e" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="9" width="18" height="8" rx="2"/><circle cx="7.5" cy="19" r="1.6"/><circle cx="16.5" cy="19" r="1.6"/></svg><span><b>Start driving</b></span></div>
+            <div class="a-turn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#1e8e3e" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 20V11a4 4 0 0 1 4-4h7"/><path d="M14 3l4 4-4 4"/></svg><span><small>After 50 m</small><b>Turn RIGHT</b></span></div><div class="a-turn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#1e8e3e" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 20V11a4 4 0 0 1 4-4h7"/><path d="M14 3l4 4-4 4"/></svg><span><small>After 150 m</small><b>Turn RIGHT</b></span></div><div class="a-turn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#1e8e3e" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 20V11a4 4 0 0 1 4-4h7"/><path d="M14 3l4 4-4 4"/></svg><span><small>After 1.4 km</small><b>Turn LEFT</b></span></div><div class="a-turn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#1e8e3e" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 20V11a4 4 0 0 1 4-4h7"/><path d="M14 3l4 4-4 4"/></svg><span><small>After 50 m</small><b>Go STRAIGHT onto Ring Road</b></span></div><div class="a-turn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#1e8e3e" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 20V11a4 4 0 0 1 4-4h7"/><path d="M14 3l4 4-4 4"/></svg><span><small>After 150 m</small><b>Keep LEFT onto Link Road</b></span></div>
+          </div></div>
+        </div></div>
+        <figcaption>Spoken, turn-by-turn directions</figcaption>
+      </figure>
+
+    </div>
+  </section>
+
+<section class="band">
+  <div class="wrap">
+    <div class="head reveal">
+      <p class="eyebrow">How it works</p>
+      <h2>Three steps, then you are there</h2>
+    </div>
+    <div class="steps">
+      <div class="step reveal"><span class="num">1</span><h3>Pick where you are going</h3><p>Tap home, a hospital, a station. No typing, no search results to read.</p></div>
+      <div class="step reveal"><span class="num">2</span><h3>Follow the road</h3><p>One clear line on a quiet map, or press once and hear every turn out loud.</p></div>
+      <div class="step reveal"><span class="num">3</span><h3>Find the right door</h3><p>At the gate the app switches to the inside route and walks you to the exact spot.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="band band-raise" id="next">
+  <div class="wrap">
+    <div class="head reveal">
+      <p class="eyebrow">What's next</p>
+      <h2>Growing place by place</h2>
+      <p>Easy Nav is in limited testing with a small group. Coverage grows wherever someone asks for it — a hospital, a campus, an apartment complex, a whole town.</p>
+    </div>
+    <div class="chips reveal">
+      <span class="pill on">Clutter-free map</span>
+      <span class="pill on">Custom inside routes</span>
+      <span class="pill on">English · Malayalam</span>
+      <span class="pill">Spoken directions</span>
+      <span class="pill">More languages</span>
+      <span class="pill">More places and regions</span>
+      <span class="pill">Installable Android app</span>
+    </div>
+  </div>
+</section>
+
+<section class="band">
+  <div class="wrap split">
+    <div class="split-copy reveal">
+      <p class="eyebrow">Why it exists</p>
+      <h2>It started with one wrong turn</h2>
+      <p class="lede">My parents-in-law could not find their way to the hospital, and visiting relatives kept circling our apartment compound looking for the right tower. The map apps were not wrong, only too busy to be read while driving.</p>
+      <p class="lede">So Easy Nav got built — first for them, then for anyone who would rather be shown one road than offered forty. It is a side project, built and tested in the open, and it gets better every time someone says where they got lost.</p>
+    </div>
+    <div class="split-art reveal">
+      <svg width="250" height="190" viewBox="0 0 220 160" aria-hidden="true">
+        <defs><linearGradient id="sg" x1="30" y1="0" x2="190" y2="0" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#19a8a6"/><stop offset="1" stop-color="#8ed33f"/></linearGradient></defs>
+        <path d="M36 44Q110 190 184 44" fill="none" stroke="url(#sg)" stroke-width="22" stroke-linecap="round"/>
+        <circle cx="36" cy="34" r="22" fill="#19a8a6"/><circle cx="184" cy="34" r="22" fill="#8ed33f"/><circle cx="184" cy="34" r="8" fill="#06201c"/>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<section class="closer" id="test">
+  <div class="wrap">
+    <div>
+      <h2>Try it, or tell us where you got lost</h2>
+      <p class="lede" style="margin-top:12px">Testing is small and invite-based for now. Ask for a place to be mapped and it goes on the list.</p>
+    </div>
+    <div class="cta-row">
+      <a class="btn btn-primary" href="mailto:hello@example.com?subject=Easy%20Nav%20test%20group">Join the test group</a>
+      <a class="btn btn-ghost" href="https://www.linkedin.com/company/easy-nav/" target="_blank" rel="noopener">Easy Nav on LinkedIn</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span><strong style="color:var(--text)">Easy Nav</strong> — Your map. Your way.</span>
+    <span><a href="mailto:hello@example.com">hello@example.com</a> · <a href="https://www.linkedin.com/company/easy-nav/" target="_blank" rel="noopener">LinkedIn</a> · © 2026</span>
+  </div>
+</footer>
+
+<script src="three.min.js"></script>
+<script>
+(function(){
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---- scroll reveals ---- */
+  var io = new IntersectionObserver(function(es){
+    es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+  },{threshold:.14});
+  document.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
+
+  /* ---- card tilt ---- */
+  if(!reduce && window.matchMedia('(hover:hover)').matches){
+    document.querySelectorAll('.tilt').forEach(function(card){
+      card.addEventListener('pointermove', function(ev){
+        var r = card.getBoundingClientRect();
+        var px = (ev.clientX - r.left)/r.width - .5, py = (ev.clientY - r.top)/r.height - .5;
+        card.style.transform = 'perspective(760px) rotateY('+(px*9)+'deg) rotateX('+(-py*9)+'deg) translateY(-5px)';
+      });
+      card.addEventListener('pointerleave', function(){ card.style.transform=''; });
+    });
+  }
+
+  /* ---- 3D city + drawing route ---- */
+  var canvas = document.getElementById('scene');
+  if(typeof THREE === 'undefined' || !canvas) return;
+
+  var renderer;
+  try{ renderer = new THREE.WebGLRenderer({canvas:canvas, antialias:true, alpha:true}); }
+  catch(err){ return; }
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio||1, 2));
+
+  var scene = new THREE.Scene();
+  scene.fog = new THREE.FogExp2(0xfbf8f1, 0.0021);
+  var camera = new THREE.PerspectiveCamera(42, 1, 0.1, 300);
+
+  var world = new THREE.Group();
+  world.rotation.x = -0.06;
+  scene.add(world);
+
+  /* ground grid */
+  var grid = new THREE.GridHelper(170, 42, 0x8f86f2, 0xd8d2f2);
+  grid.material.transparent = true;
+  grid.material.opacity = 0.5;
+  world.add(grid);
+
+  var plate = new THREE.Mesh(
+    new THREE.PlaneGeometry(185,185),
+    new THREE.MeshBasicMaterial({color:0xf3f0fb, transparent:true, opacity:.95})
+  );
+  plate.rotation.x = -Math.PI/2; plate.position.y = -0.4;
+  world.add(plate);
+
+  /* buildings; the avenues the route can use are left clear */
+  var AVX = [-5,-2,1,4,7], AVZ = [-6,-3,0,3,6];
+  var boxGeo = new THREE.BoxGeometry(1,1,1);
+  var matDark = new THREE.MeshStandardMaterial({color:0x9a8ee8, roughness:.76, metalness:.05});
+  var matLit  = new THREE.MeshStandardMaterial({color:0x6c5ce7, roughness:.6, metalness:.08});
+  for(var gx=-7; gx<=7; gx++){
+    for(var gz=-7; gz<=7; gz++){
+      if(AVX.indexOf(gx)>=0 || AVZ.indexOf(gz)>=0) continue;
+      if(Math.random() < 0.16) continue;
+      var h = 2 + Math.random()*9;
+      var m = new THREE.Mesh(boxGeo, Math.random()<0.2 ? matLit : matDark);
+      m.position.set(gx*8 + (Math.random()-.5)*1.6, h/2, gz*8 + (Math.random()-.5)*1.6);
+      m.scale.set(3.4+Math.random()*2.2, h, 3.4+Math.random()*2.2);
+      world.add(m);
+    }
+  }
+
+  scene.add(new THREE.AmbientLight(0xffffff, 0.62));
+  var key = new THREE.DirectionalLight(0xffffff, 1.35);
+  key.position.set(-18, 34, 16); scene.add(key);
+  var rim = new THREE.PointLight(0x8f86f2, 1.4, 200);
+  rim.position.set(26, 26, -22); scene.add(rim);
+
+  /* the route, redrawn between a new pair of points every time it finishes */
+  var tubeMat = new THREE.ShaderMaterial({
+    transparent:true,
+    uniforms:{ uProgress:{value:0}, uA:{value:new THREE.Color(0x0a8a8f)}, uB:{value:new THREE.Color(0x7ccf3a)} },
+    vertexShader:'varying vec2 vUv; void main(){ vUv=uv; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0); }',
+    fragmentShader:[
+      'varying vec2 vUv; uniform float uProgress; uniform vec3 uA; uniform vec3 uB;',
+      'void main(){',
+      '  if(vUv.x > uProgress) discard;',
+      '  vec3 col = mix(uA, uB, vUv.x);',
+      '  float head = smoothstep(uProgress-0.05, uProgress, vUv.x);',
+      '  col += head * 0.22;',
+      '  float edge = smoothstep(0.0,0.42,abs(vUv.y-0.5)*2.0);',
+      '  gl_FragColor = vec4(col, 0.80 + 0.20*(1.0-edge));',
+      '}'
+    ].join('\n')
+  });
+  var tube = new THREE.Mesh(new THREE.BufferGeometry(), tubeMat);
+  world.add(tube);
+
+  var pin = new THREE.Mesh(new THREE.ConeGeometry(2.6, 7.4, 20), new THREE.MeshBasicMaterial({color:0x4a8f14}));
+  pin.rotation.x = Math.PI;
+  world.add(pin);
+
+  var shadow = new THREE.Mesh(
+    new THREE.CircleGeometry(6, 28),
+    new THREE.MeshBasicMaterial({color:0x5b5497, transparent:true, opacity:.2})
+  );
+  shadow.rotation.x = -Math.PI/2; shadow.position.y = 0.3;
+  world.add(shadow);
+
+  /* three travellers: car, bike, on foot - one per run */
+  var paint  = new THREE.MeshStandardMaterial({color:0x4b3fa8, roughness:.38, metalness:.2});
+  var roofM  = new THREE.MeshStandardMaterial({color:0x7ccf3a, roughness:.5, metalness:.1});
+  var glassM = new THREE.MeshStandardMaterial({color:0xcfe8ff, roughness:.15, metalness:.3});
+  var tyreM  = new THREE.MeshStandardMaterial({color:0x22203a, roughness:.9});
+  var lampM  = new THREE.MeshBasicMaterial({color:0xfff3b0});
+  var skinM  = new THREE.MeshStandardMaterial({color:0xe8b48a, roughness:.7});
+  var wheelGeo = new THREE.CylinderGeometry(1.6, 1.6, 1.3, 16);
+
+  /* car */
+  var car = new THREE.Group();
+  var body = new THREE.Mesh(boxGeo, paint);
+  body.scale.set(12.5, 3.0, 5.8); body.position.y = 2.6;
+  var hood = new THREE.Mesh(boxGeo, paint);
+  hood.scale.set(4.2, 1.6, 5.4); hood.position.set(4.3, 4.6, 0);
+  var cabin = new THREE.Mesh(boxGeo, roofM);
+  cabin.scale.set(5.6, 3.1, 5.2); cabin.position.set(-1.6, 5.4, 0);
+  var glass = new THREE.Mesh(boxGeo, glassM);
+  glass.scale.set(0.7, 2.2, 4.8); glass.position.set(1.3, 5.3, 0);
+  car.add(body, hood, cabin, glass);
+  [[4.0,3.0],[4.0,-3.0],[-4.0,3.0],[-4.0,-3.0]].forEach(function(w){
+    var wh = new THREE.Mesh(wheelGeo, tyreM);
+    wh.rotation.x = Math.PI/2; wh.position.set(w[0], 1.6, w[1]); car.add(wh);
+  });
+  [[6.4,1.9],[6.4,-1.9]].forEach(function(l){
+    var lamp = new THREE.Mesh(boxGeo, lampM);
+    lamp.scale.set(0.5, 1.0, 1.4); lamp.position.set(l[0], 2.9, l[1]); car.add(lamp);
+  });
+  world.add(car);
+
+  /* bike */
+  var bike = new THREE.Group();
+  var bWheel = new THREE.CylinderGeometry(2.0, 2.0, 0.9, 18);
+  [3.2, -3.2].forEach(function(x){
+    var wh = new THREE.Mesh(bWheel, tyreM);
+    wh.rotation.x = Math.PI/2; wh.position.set(x, 2.0, 0); bike.add(wh);
+  });
+  var bFrame = new THREE.Mesh(boxGeo, paint);
+  bFrame.scale.set(7.0, 1.5, 2.2); bFrame.position.y = 3.0;
+  var tank = new THREE.Mesh(boxGeo, roofM);
+  tank.scale.set(3.0, 1.6, 2.0); tank.position.set(0.4, 4.3, 0);
+  var bars = new THREE.Mesh(boxGeo, tyreM);
+  bars.scale.set(0.6, 0.6, 4.2); bars.position.set(3.0, 5.0, 0);
+  var rider = new THREE.Mesh(boxGeo, paint);
+  rider.scale.set(2.2, 3.4, 2.6); rider.position.set(-1.2, 6.2, 0);
+  var helmet = new THREE.Mesh(new THREE.SphereGeometry(1.4, 16, 16), roofM);
+  helmet.position.set(-0.8, 8.4, 0);
+  var bLamp = new THREE.Mesh(boxGeo, lampM);
+  bLamp.scale.set(0.5, 1.2, 1.2); bLamp.position.set(4.4, 4.2, 0);
+  bike.add(bFrame, tank, bars, rider, helmet, bLamp);
+  bike.visible = false;
+  world.add(bike);
+
+  /* on foot */
+  var walker = new THREE.Group();
+  var torso = new THREE.Mesh(boxGeo, paint);
+  torso.scale.set(2.2, 4.0, 3.0); torso.position.y = 6.2;
+  var head = new THREE.Mesh(new THREE.SphereGeometry(1.4, 16, 16), skinM);
+  head.position.y = 9.1;
+  var cap = new THREE.Mesh(boxGeo, roofM);
+  cap.scale.set(2.6, 0.7, 2.9); cap.position.y = 10.1;
+  walker.add(torso, head, cap);
+  var legs = [];
+  [1.0, -1.0].forEach(function(z){
+    var hip = new THREE.Group();
+    hip.position.set(0, 4.2, z);
+    var leg = new THREE.Mesh(boxGeo, tyreM);
+    leg.scale.set(1.1, 4.2, 1.1); leg.position.y = -2.1;
+    hip.add(leg); walker.add(hip); legs.push(hip);
+  });
+  var arms = [];
+  [1.7, -1.7].forEach(function(z){
+    var sh = new THREE.Group();
+    sh.position.set(0, 7.6, z);
+    var arm = new THREE.Mesh(boxGeo, paint);
+    arm.scale.set(0.9, 3.4, 0.9); arm.position.y = -1.7;
+    sh.add(arm); walker.add(sh); arms.push(sh);
+  });
+  walker.visible = false;
+  world.add(walker);
+
+  var travellers = [car, bike, walker];
+  var active = car, mode = 0;   // 0 car, 1 bike, 2 on foot
+
+  /* pick a fresh origin and destination on the grid, joined along the avenues */
+  var curve = null;
+  function anyOf(a){ return a[(Math.random()*a.length)|0]; }
+  function between(a, p, q){
+    var lo = Math.min(p,q), hi = Math.max(p,q);
+    return a.filter(function(v){ return v > lo && v < hi; });
+  }
+  function newRoute(onFoot){
+    var gap = onFoot ? 3 : 6;
+    var xi = anyOf(AVX), xj;
+    do { xj = anyOf(AVX); } while(Math.abs(xj - xi) !== gap && (onFoot || Math.abs(xj - xi) < gap));
+    var zi = anyOf(AVZ), zj;
+    do { zj = anyOf(AVZ); } while(Math.abs(zj - zi) !== gap && (onFoot || Math.abs(zj - zi) < gap));
+    var pts = [new THREE.Vector3(xi*8, 1.1, zi*8)];
+    var midX = between(AVX, xi, xj), midZ = between(AVZ, zi, zj);
+    if(!onFoot && midX.length && midZ.length && Math.random() < 0.75){
+      var xm = anyOf(midX)*8, zm = anyOf(midZ)*8;
+      pts.push(new THREE.Vector3(xi*8, 1.1, zm));
+      pts.push(new THREE.Vector3(xm,   1.1, zm));
+      pts.push(new THREE.Vector3(xm,   1.1, zj*8));
+    } else if(Math.random() < 0.5){
+      pts.push(new THREE.Vector3(xi*8, 1.1, zj*8));
+    } else {
+      pts.push(new THREE.Vector3(xj*8, 1.1, zi*8));
+    }
+    pts.push(new THREE.Vector3(xj*8, 1.1, zj*8));
+    curve = new THREE.CatmullRomCurve3(pts, false, 'catmullrom', 0.03);
+    if(tube.geometry) tube.geometry.dispose();
+    tube.geometry = new THREE.TubeGeometry(curve, 300, 3.4, 16, false);
+    var e = curve.getPointAt(1);
+    pin.position.set(e.x, 6.4, e.z);
+  }
+  newRoute(false);
+
+  function placeTraveller(at, time){
+    var pt = curve.getPointAt(at);
+    active.position.set(pt.x, pt.y - 0.6, pt.z);
+    shadow.position.set(pt.x, 0.3, pt.z);
+    var tan = curve.getTangentAt(at);
+    active.rotation.y = Math.atan2(-tan.z, tan.x);
+    if(active === walker){
+      var sw = Math.sin(time * 34);
+      legs[0].rotation.z = sw * 0.55; legs[1].rotation.z = -sw * 0.55;
+      arms[0].rotation.z = -sw * 0.4; arms[1].rotation.z = sw * 0.4;
+      walker.position.y += Math.abs(Math.cos(time * 34)) * 0.4;
+    } else if(active === bike){
+      bike.rotation.z = Math.sin(time * 3) * 0.05;
+    }
+  }
+
+  /* responsive camera framing */
+  function layout(){
+    var w = canvas.clientWidth || window.innerWidth;
+    var h = canvas.clientHeight || 620;
+    renderer.setSize(w, h, false);
+    camera.aspect = w/h;
+    var narrow = w < 900;
+    camera.position.set(narrow ? 14 : 62, narrow ? 150 : 86, narrow ? 150 : 104);
+    camera.lookAt(narrow ? 0 : -26, 0, narrow ? 0 : 4);
+    camera.updateProjectionMatrix();
+  }
+  layout();
+  window.addEventListener('resize', layout);
+
+  var mx = 0, my = 0, tx = 0, ty = 0;
+  if(!reduce){
+    window.addEventListener('pointermove', function(e){
+      tx = (e.clientX/window.innerWidth - .5);
+      ty = (e.clientY/window.innerHeight - .5);
+    });
+  }
+
+  var t = 0, running = true, lap = -1;
+  document.addEventListener('visibilitychange', function(){ running = !document.hidden; });
+
+  function frame(){
+    requestAnimationFrame(frame);
+    if(!running) return;
+
+    if(reduce){
+      tubeMat.uniforms.uProgress.value = 1;
+      placeTraveller(0.999, 0);
+      renderer.render(scene, camera);
+      return;
+    }
+
+    t += 0.0042;
+    var thisLap = Math.floor(t/1.34);
+    if(thisLap !== lap){
+      lap = thisLap;
+      mode = (mode + 1) % 3;
+      travellers.forEach(function(g){ g.visible = false; });
+      active = travellers[mode];
+      active.visible = true;
+      newRoute(mode === 2);
+    }
+
+    var p = Math.min((t % 1.34)/1.0, 1);
+    var eased = p<0.5 ? 2*p*p : 1-Math.pow(-2*p+2,2)/2;
+    tubeMat.uniforms.uProgress.value = eased;
+    placeTraveller(Math.max(0.0005, Math.min(eased, 0.999)), t);
+
+    pin.position.y = 6.4 + Math.sin(t*9)*0.7;
+    pin.rotation.y += 0.02;
+    shadow.material.opacity = eased >= 1 ? 0.1 : 0.2;
+
+    mx += (tx-mx)*0.045; my += (ty-my)*0.045;
+    world.rotation.y = -0.34 + Math.sin(t*0.5)*0.07 + mx*0.3;
+    world.rotation.x = -0.06 + my*0.08;
+
+    renderer.render(scene, camera);
+  }
+  frame();
+})();
+</script>
+</body>
+</html>
