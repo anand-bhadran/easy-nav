@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<meta name="referrer" content="no-referrer">
+<title>Easy Nav: way to the door</title>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<style>
+  :root { --bg: #f5f3ee; --card: #ffffff; --ink: #24242b; --muted: #6b6a72; --primary: #6c5ce7; --line: #e3dfd6; }
+  @media (prefers-color-scheme: dark) { :root { --bg: #121315; --card: #1e1f22; --ink: #ecebe6; --muted: #a8a59c; --line: #3a3b40; } }
+  * { box-sizing: border-box; }
+  body { margin: 0; min-height: 100dvh; display: flex; align-items: center; justify-content: center; padding: 16px; background: var(--bg); color: var(--ink); font: 16px/1.45 system-ui, -apple-system, 'Noto Sans Malayalam', sans-serif; }
+  main { width: 100%; max-width: 420px; background: var(--card); border: 1px solid var(--line); border-radius: 22px; padding: 26px 22px; text-align: center; }
+  img { width: 68px; height: 68px; border-radius: 16px; }
+  h1 { margin: 12px 0 4px; font-size: 1.35rem; }
+  p { margin: 6px 0; color: var(--muted); font-size: .95rem; }
+  a.btn, button { display: block; width: 100%; margin-top: 12px; padding: 14px; border-radius: 14px; border: 2px solid var(--primary); font: inherit; font-weight: 700; text-decoration: none; text-align: center; cursor: pointer; }
+  .main { background: var(--primary); color: #fff; }
+  .ghost { background: transparent; color: var(--primary); }
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<main>
+  <img src="../favicon.svg" alt="">
+  <h1>Way to the door</h1>
+  <p>Someone shared the way to their door with you, for the Easy Nav app.</p>
+  <p lang="ml">വാതിലിലേക്കുള്ള വഴി ഈസി നാവ് ആപ്പിനായി നിങ്ങളുമായി പങ്കിട്ടിരിക്കുന്നു.</p>
+
+  <div id="android" hidden>
+    <a id="open" class="btn main" href="#">Open in Easy Nav</a>
+    <a class="btn ghost" href="../EasyNav.apk">Don't have the app? Download it</a>
+    <p id="after">After installing, come back here and tap Open.</p>
+    <button id="copy" class="ghost" type="button">Copy, to paste in the app</button>
+  </div>
+  <p id="elsewhere" hidden>Please open this link on your Android phone. Easy Nav isn't available for other phones yet.</p>
+  <p id="bad" hidden>This link looks incomplete. Please ask for it to be sent again.</p>
+</main>
+<script>
+  // Everything about the way is in the part of the address after #, which browsers never send to a
+  // website: it stays on this phone. It's only passed on to the app, and never shown here.
+  var code = (location.hash.match(/^#(EASYNAV1:[A-Za-z0-9_-]{10,20000})$/) || [])[1];
+  var android = /Android/i.test(navigator.userAgent);
+  var show = function (id) { document.getElementById(id).hidden = false; };
+  if (!code) show('bad');
+  else if (!android) show('elsewhere');
+  else {
+    show('android');
+    // (no app: Android comes back to this same page, which then doesn't try again by itself)
+    var noApp = location.search.indexOf('noapp') >= 0;
+    var back = location.origin + location.pathname + '?noapp=1' + location.hash;
+    var link = 'intent://way/' + code + '#Intent;scheme=easynav;package=in.easynav.app;S.browser_fallback_url=' + encodeURIComponent(back) + ';end';
+    document.getElementById('open').href = link;
+    if (!noApp) location.href = link;
+    document.getElementById('copy').onclick = function () {
+      var b = this;
+      navigator.clipboard.writeText(code).then(function () { b.textContent = 'Copied. In Easy Nav: Home button, then Add a shared way'; });
+    };
+  }
+</script>
+</body>
+</html>
