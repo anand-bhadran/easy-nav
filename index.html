@@ -1230,7 +1230,7 @@ footer a:hover{color:var(--purple)}
   startDot.add(sdRing, sdDot); world.add(startDot);
 
   /* the destination: a classic map pin (round head, pointed tip, rounded edges) in the app's purple,
-     with a white dot, facing the viewer and gently bobbing; a soft grey ring ripples out beneath it */
+     with a white dot, facing the viewer and gently bobbing */
   var pin = new THREE.Group(), pinHead = new THREE.Group();
   var PIN_R = 2.4, PIN_C = 6.4, tA0 = -22*Math.PI/180, tA1 = 202*Math.PI/180;
   var pinShape = new THREE.Shape();
@@ -1252,14 +1252,22 @@ footer a:hover{color:var(--purple)}
   pin.add(pinHead, pinShade);
   world.add(pin);
   var pinFade = fader(pin);
-  var ripple = new THREE.Mesh(new THREE.RingGeometry(1.6, 2.0, 40), new THREE.MeshBasicMaterial({color:0x8d8a82, transparent:true, opacity:0, depthWrite:false}));
-  ripple.rotation.x = -Math.PI/2; ripple.position.y = 0.9;
-  world.add(ripple);
+  /* under the traveller: soft, feathered rings that ripple out as it goes (two, one after the other) */
+  var rippleTex = (function(){
+    var c = document.createElement('canvas'); c.width = c.height = 128;
+    var g = c.getContext('2d'), grad = g.createRadialGradient(64, 64, 0, 64, 64, 64);
+    grad.addColorStop(0, 'rgba(120,117,110,0)'); grad.addColorStop(0.5, 'rgba(120,117,110,0)');
+    grad.addColorStop(0.74, 'rgba(120,117,110,0.85)'); grad.addColorStop(1, 'rgba(120,117,110,0)');
+    g.fillStyle = grad; g.fillRect(0, 0, 128, 128);
+    return new THREE.CanvasTexture(c);
+  })();
+  var ripples = [0, 0.5].map(function(phase){
+    var r = new THREE.Mesh(new THREE.PlaneGeometry(9, 9), new THREE.MeshBasicMaterial({map:rippleTex, transparent:true, opacity:0, depthWrite:false}));
+    r.rotation.x = -Math.PI/2; r.position.y = ROUTE_Y + 0.15; r.userData.phase = phase;
+    world.add(r); return r;
+  });
   var pinAlpha = 0;
 
-  var shadow = new THREE.Mesh(new THREE.CircleGeometry(5.5, 28), flat(0x5b5497, .18));
-  shadow.rotation.x = -Math.PI/2; shadow.position.y = 0.3;
-  world.add(shadow);
 
   /* three travellers: car, bike, on foot (one per run, as the app routes by car, bike or walking) */
   var paint  = mat(0x4b3fa8, {roughness:.38, metalness:.2});
@@ -1351,13 +1359,13 @@ footer a:hover{color:var(--purple)}
     tube.geometry = bandGeometry(curve, 300, ROUTE_W);
     startDot.position.set(pts[0].x, 0, pts[0].z);
     var e = curve.getPointAt(1);
-    pin.position.set(e.x, 0, e.z); ripple.position.x = e.x; ripple.position.z = e.z;
+    pin.position.set(e.x, 0, e.z);
   }
 
   function placeTraveller(at, s){
     var pt = curve.getPointAt(at);
     active.position.set(pt.x, ROUTE_Y + 0.05, pt.z);
-    shadow.position.set(pt.x, ROUTE_Y + 0.12, pt.z);
+    ripples.forEach(function(r){ r.position.x = pt.x; r.position.z = pt.z; });
     var tan = curve.getTangentAt(at);
     active.rotation.y = Math.atan2(-tan.z, tan.x);
     if(active === walker){
@@ -1485,11 +1493,12 @@ footer a:hover{color:var(--purple)}
     ringM.opacity = dA; dotM.opacity = dA; startDot.visible = dA > 0.003;
 
     pinHead.position.y = 1.0 + Math.sin(s*1.8)*0.45;
-    var rp = (s*0.4) % 1;                                     // the ring ripples outwards, fading as it goes
-    ripple.scale.setScalar(1 + rp*1.4);
-    ripple.material.opacity = pinAlpha * 0.35 * (1 - rp);
-    ripple.visible = ripple.material.opacity > 0.003;
-    shadow.material.opacity = 0.18 * tA;
+    ripples.forEach(function(r){                              // each ring grows, fading in then out
+      var rp = (s*0.35 + r.userData.phase) % 1;
+      r.scale.setScalar(0.7 + rp*1.2);
+      r.material.opacity = tA * 0.45 * Math.sin(rp*Math.PI);
+      r.visible = r.material.opacity > 0.003;
+    });
 
     mx += (tx-mx)*0.03; my += (ty-my)*0.03;
     world.rotation.y = -0.34 + Math.sin(s*0.06)*0.06 + mx*0.22;
