@@ -912,12 +912,12 @@ footer a:hover{color:var(--purple)}
         world.add(b);
       });
     }
-    var pm = mat(0xdedbd2);
+    var pm = mat(0xb3afa6, {roughness:.85});      // the same concrete as the metro piers
     for(var pz = FLY.start + 10; pz < FLY.end; pz += 10){
       var h = flyY(pz) - 1.2;
       var nearRoad = AVZ.some(function(a){ return Math.abs(pz - a*S) < 5; });
       if(h < 2 || nearRoad || Math.abs(pz - metroZ(x)) < 6) continue;
-      var pil = new THREE.Mesh(new THREE.CylinderGeometry(1.1, 1.3, h, 10), pm);
+      var pil = new THREE.Mesh(new THREE.CylinderGeometry(1.1, 1.3, h, 14), pm);
       pil.position.set(x, h/2, pz); world.add(pil);
     }
   })();
