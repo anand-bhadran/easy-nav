@@ -912,7 +912,8 @@ footer a:hover{color:var(--purple)}
         world.add(b);
       });
     }
-    var pm = mat(0xcac6bd, {roughness:.85});      // concrete, a little lighter than the metro piers
+    /* concrete with softer shading: a darker colour plus an even glow, so the sunny side isn't white and the shady side isn't dark */
+    var pm = mat(0x524f4a, {roughness:.9, emissive:0x75726b});
     for(var pz = FLY.start + 10; pz < FLY.end; pz += 10){
       var h = flyY(pz) - 1.2;
       var nearRoad = AVZ.some(function(a){ return Math.abs(pz - a*S) < 5; });
