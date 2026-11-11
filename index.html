@@ -1229,9 +1229,21 @@ footer a:hover{color:var(--purple)}
   var sdDot = new THREE.Mesh(new THREE.CircleGeometry(1.7, 28), dotM); sdDot.rotation.x = -Math.PI/2; sdDot.position.y = 0.85;
   startDot.add(sdRing, sdDot); world.add(startDot);
 
-  var pin = new THREE.Mesh(new THREE.ConeGeometry(2.4, 7, 20), flat(0x4a8f14, 1));
-  pin.rotation.x = Math.PI;
+  /* the destination: a map pin in the logo's lime, a white dot in its head, gently bobbing over
+     a ring that ripples out on the road */
+  var pin = new THREE.Group(), pinHead = new THREE.Group();
+  var pinProfile = [new THREE.Vector2(0.01, 0)];
+  for(var pa=-60; pa<=90; pa+=10){ var rad = pa*Math.PI/180; pinProfile.push(new THREE.Vector2(Math.max(0.01, 2.3*Math.cos(rad)), 6.6 + 2.3*Math.sin(rad))); }
+  var pinBody = new THREE.Mesh(new THREE.LatheGeometry(pinProfile, 28), mat(0x7ccf3a, {roughness:.45, emissive:0x1f3a10}));
+  var pinDot = new THREE.Mesh(new THREE.CylinderGeometry(0.95, 0.95, 4.75, 24), flat(0xffffff));
+  pinDot.rotation.x = Math.PI/2; pinDot.position.y = 6.6;
+  pinHead.add(pinBody, pinDot);
+  pinHead.rotation.y = 0.9;                                   // its dot turned towards the viewer
+  var ripple = new THREE.Mesh(new THREE.RingGeometry(1.5, 2.3, 32), flat(0x5a9e22, .55));
+  ripple.rotation.x = -Math.PI/2; ripple.position.y = 0.9;
+  pin.add(pinHead, ripple);
   world.add(pin);
+  var pinFade = fader(pin);
 
   var shadow = new THREE.Mesh(new THREE.CircleGeometry(5.5, 28), flat(0x5b5497, .18));
   shadow.rotation.x = -Math.PI/2; shadow.position.y = 0.3;
@@ -1327,7 +1339,7 @@ footer a:hover{color:var(--purple)}
     tube.geometry = bandGeometry(curve, 300, ROUTE_W);
     startDot.position.set(pts[0].x, 0, pts[0].z);
     var e = curve.getPointAt(1);
-    pin.position.set(e.x, 6, e.z);
+    pin.position.set(e.x, 0, e.z);
   }
 
   function placeTraveller(at, s){
@@ -1451,8 +1463,7 @@ footer a:hover{color:var(--purple)}
     var tA = Math.min(1, lapT/0.9, Math.max(0, 1 - (lapT - DRAW_S)/1.4));
     travellerFade[mode](tA);
     var near = Math.max(0, Math.min(1, (eased - 0.8)/0.16));
-    pin.material.opacity = Math.min(1, lapT/0.9) * (1 - near*near*(3-2*near));
-    pin.visible = pin.material.opacity > 0.003;
+    pinFade(Math.min(1, lapT/0.9) * (1 - near*near*(3-2*near)));
 
     sendPublic();
     movers.forEach(function(m){ m.update(dt, s); });
@@ -1460,8 +1471,9 @@ footer a:hover{color:var(--purple)}
     var dA = Math.min(1, lapT/0.6, Math.max(0, 1 - (lapT - DRAW_S - REST_S + 1.2)/1.2));
     ringM.opacity = dA; dotM.opacity = dA; startDot.visible = dA > 0.003;
 
-    pin.position.y = 6 + Math.sin(s*1.8)*0.5;
-    pin.rotation.y += dt*0.5;
+    pinHead.position.y = 1.0 + Math.sin(s*1.8)*0.45;
+    var rp = (s*0.45) % 1;                                    // the ring ripples outwards, again and again
+    ripple.scale.setScalar(1 + rp*1.2);
     shadow.material.opacity = 0.18 * tA;
 
     mx += (tx-mx)*0.03; my += (ty-my)*0.03;
