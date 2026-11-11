@@ -6,17 +6,17 @@
 <title>Easy Nav</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImciIHgxPSIyMiIgeTE9IjAiIHgyPSI3OCIgeTI9IjAiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj48c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiMwYThhOGYiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiM3Y2NmM2EiLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgcng9IjIyIiBmaWxsPSIjZmZmZmZmIi8+PGcgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZTRlY2U5IiBzdHJva2UtbGluZWNhcD0icm91bmQiPjxwYXRoIGQ9Ik0wIDY2TDEwMCA1OCIgc3Ryb2tlLXdpZHRoPSI3Ii8+PHBhdGggZD0iTTY2IDBMNzIgMTAwIiBzdHJva2Utd2lkdGg9IjYiLz48L2c+PHBhdGggZD0iTTI3IDQwUTUwIDkyIDczIDQwIiBmaWxsPSJub25lIiBzdHJva2U9InVybCgjZykiIHN0cm9rZS13aWR0aD0iMTEiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjxjaXJjbGUgY3g9IjI3IiBjeT0iMzYiIHI9IjExIiBmaWxsPSIjMGE4YThmIi8+PGNpcmNsZSBjeD0iNzMiIGN5PSIzNiIgcj0iMTEiIGZpbGw9IiM3Y2NmM2EiLz48Y2lyY2xlIGN4PSI3MyIgY3k9IjM2IiByPSI0LjIiIGZpbGw9IiNmZmZmZmYiLz48L3N2Zz4=">
 <link rel="apple-touch-icon" href="favicon.svg">
-<meta name="description" content="A calm, clutter-free map with custom routes that take you past the gate to the right building, entrance and parking spot.">
+<meta name="description" content="A simple, clutter-free map that is easy to make your own: big readable text, your own routes, a practice drive, the map without internet, and a shareable way to your door.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Lexend:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
-/* Layout idea: a 3D city plate under a drawing route anchors the hero; everything below is a single calm column of wide, low-contrast bands. */
+/* Layout idea: a calm 3D city (in the app's own map colours, with its metro, water metro and buses
+   pausing and moving on) anchors the hero; everything below is a single calm column of wide bands. */
 :root{
   color-scheme: light;
   --ink:#fbf8f1;          /* page base, as in the app */
   --surface:#ffffff;
-  --surface-2:#f4f1ff;
   --purple:#6c5ce7;
   --purple-2:#4b3fa8;
   --teal:#0a8a8f;
@@ -29,6 +29,7 @@
 }
 *{box-sizing:border-box}
 html,body{margin:0;padding:0}
+html{scroll-behavior:smooth}
 body{
   background:var(--ink);
   color:var(--text);
@@ -64,9 +65,14 @@ a:focus-visible,button:focus-visible{outline:3px solid var(--purple-2);outline-o
 .hero{position:relative;padding:150px 0 96px;min-height:min(94vh,800px);display:flex;align-items:center}
 #scene{position:absolute;inset:0;width:100%;height:100%;display:block;z-index:0}
 .hero::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
-  background:radial-gradient(760px 540px at 10% 44%,rgba(251,248,241,.97),rgba(251,248,241,.72) 48%,rgba(251,248,241,0) 76%),
-             radial-gradient(700px 500px at 74% 48%,rgba(108,92,231,.1),rgba(108,92,231,0) 70%),
-             linear-gradient(to bottom,rgba(251,248,241,.9),rgba(251,248,241,0) 26%,rgba(251,248,241,.96))}
+  /* the city fades away towards the left, so the words and buttons sit on a quiet background */
+  background:linear-gradient(to right,rgba(251,248,241,1) 0%,rgba(251,248,241,.96) 30%,rgba(251,248,241,.8) 42%,rgba(251,248,241,.35) 56%,rgba(251,248,241,0) 70%),
+             radial-gradient(760px 540px at 14% 50%,rgba(251,248,241,.9),rgba(251,248,241,0) 75%),
+             linear-gradient(to bottom,rgba(251,248,241,.85),rgba(251,248,241,0) 22%,rgba(251,248,241,0) 80%,rgba(251,248,241,.96))}
+@media (max-width:900px){
+  /* on narrow screens the words cover the whole width: keep the city as a faint backdrop */
+  .hero::after{background:linear-gradient(to bottom,rgba(251,248,241,.9),rgba(251,248,241,.78) 40%,rgba(251,248,241,.82) 75%,rgba(251,248,241,.97))}
+}
 .hero .wrap{position:relative;z-index:2}
 .hero-copy{max-width:36rem;display:flex;flex-direction:column;gap:22px}
 h1{font-size:clamp(2.9rem,7.2vw,5rem);font-weight:800;letter-spacing:-.035em}
@@ -74,7 +80,10 @@ h1 .grad{background:linear-gradient(100deg,#0a8a8f,#4a8f14);-webkit-background-c
 .lede{font-size:1.19rem;color:var(--muted);max-width:33rem}
 .cta-row{display:flex;flex-wrap:wrap;gap:14px}
 .hero-note{display:inline-flex;align-items:center;gap:10px;font-size:14.5px;color:var(--muted)}
-.dot{width:9px;height:9px;border-radius:50%;background:#5a9e22;box-shadow:0 0 0 4px rgba(90,158,34,.18)}
+.dot{width:9px;height:9px;border-radius:50%;background:#5a9e22;box-shadow:0 0 0 4px rgba(90,158,34,.18);flex:none}
+.legend{display:flex;flex-wrap:wrap;gap:8px 16px;font-size:13.5px;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:7px}
+.legend i{width:12px;height:12px;border-radius:4px;display:inline-block}
 
 /* ---------- sections ---------- */
 section{position:relative}
@@ -92,23 +101,30 @@ h2{font-size:clamp(2rem,4.2vw,2.9rem);letter-spacing:-.025em}
 .ico{width:46px;height:46px;border-radius:13px;display:flex;align-items:center;justify-content:center;background:#eef6e3;border:1px solid #cbe3ab;transform:translateZ(34px)}
 .card h3,.card p{transform:translateZ(16px)}
 
+/* the feature list: compact rows, icon beside the words */
+.feats{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px 22px}
+.feat{display:flex;gap:16px;align-items:flex-start;padding:20px 20px 22px;border-radius:18px;background:var(--ink);border:1px solid var(--line)}
+.feat .ico{transform:none;flex:none;width:42px;height:42px;border-radius:12px;background:#f1eeff;border-color:#ddd7f7}
+.feat h3{font-size:1.1rem;margin-bottom:4px}
+.feat p{color:var(--muted);font-size:15.5px}
+
 .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(258px,1fr));gap:26px}
 .step{display:flex;flex-direction:column;gap:12px}
 .num{width:54px;height:54px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--display);font-weight:800;font-size:1.3rem;color:#fff;background:linear-gradient(140deg,var(--purple),var(--purple-2))}
 .step h3{font-size:1.2rem}
 .step p{color:var(--muted);font-size:16px}
 
-/* ---------- route / phone split ---------- */
+/* ---------- split ---------- */
 .split{display:flex;flex-wrap:wrap;gap:56px;align-items:center}
 .split-copy{flex:1 1 400px;min-width:0;display:flex;flex-direction:column;gap:18px}
 .split-art{flex:1 1 300px;display:flex;justify-content:center;perspective:1300px}
 
 /* --- phone mockups, drawn in the app's own colours --- */
-.screens{display:grid;grid-template-columns:repeat(auto-fit,minmax(252px,1fr));gap:30px;margin-top:52px;perspective:1600px;
+.screens{display:grid;grid-template-columns:repeat(auto-fit,minmax(252px,1fr));gap:30px;perspective:1600px;
   padding:52px 30px 40px;border-radius:28px;border:1px solid #ddd7f7;
   background:radial-gradient(700px 320px at 50% 0%,rgba(108,92,231,.14),rgba(108,92,231,0) 70%),linear-gradient(165deg,#f1eeff,#e7e3fb)}
 @media (max-width:620px){.screens{padding:34px 16px 28px}}
-.shot{display:flex;flex-direction:column;align-items:center;gap:16px}
+.shot{display:flex;flex-direction:column;align-items:center;gap:16px;margin:0}
 .phone{
   --ap:#6c5ce7; --ap-dark:#4b3fa8; --abg:#fbf8f1; --aink:#1b1b18; --amuted:#55534b;
   --aline:#ddd6c6; --aamber:#f2a900; --astar:#c97a00; --apoint:#1a73e8; --asight:#1e8e3e; --ared:#d9480f;
@@ -118,57 +134,187 @@ h2{font-size:clamp(2rem,4.2vw,2.9rem);letter-spacing:-.025em}
   transition:transform .5s cubic-bezier(.2,.7,.3,1);
   font-family:'Lexend',var(--body);
 }
-.shot:nth-child(1) .phone{transform:rotateY(13deg) rotateX(5deg)}
-.shot:nth-child(2) .phone{transform:rotateY(0deg) rotateX(5deg) translateY(-14px)}
-.shot:nth-child(3) .phone{transform:rotateY(-13deg) rotateX(5deg)}
+.screens .shot:nth-child(1) .phone{transform:rotateY(13deg) rotateX(5deg)}
+.screens .shot:nth-child(2) .phone{transform:rotateY(0deg) rotateX(5deg) translateY(-14px)}
+.screens .shot:nth-child(3) .phone{transform:rotateY(-13deg) rotateX(5deg)}
+.split-art .phone{transform:rotateY(-12deg) rotateX(4deg)}
 .shot:hover .phone{transform:rotateY(0) rotateX(0) translateY(-18px)}
 /* punch-hole camera, side keys and the gesture bar make it read as a handset */
-.phone::before{content:"";position:absolute;z-index:6;top:21px;left:50%;transform:translateX(-50%);width:7px;height:7px;border-radius:50%;background:#05060a;box-shadow:0 0 0 1.5px rgba(255,255,255,.18)}
-.phone::after{content:"";position:absolute;right:-3px;top:104px;width:3px;height:40px;border-radius:0 4px 4px 0;background:linear-gradient(#484b5b,#1d1f29);
-  box-shadow:0 56px 0 0 #3b3e4d,0 56px 0 0 rgba(0,0,0,0);}
+.phone::before{content:"";position:absolute;z-index:8;top:21px;left:50%;transform:translateX(-50%);width:7px;height:7px;border-radius:50%;background:#05060a;box-shadow:0 0 0 1.5px rgba(255,255,255,.18)}
+.phone::after{content:"";position:absolute;right:-3px;top:104px;width:3px;height:40px;border-radius:0 4px 4px 0;background:linear-gradient(#484b5b,#1d1f29)}
 .vol{position:absolute;right:-3px;top:160px;width:3px;height:66px;border-radius:0 4px 4px 0;background:linear-gradient(#484b5b,#1d1f29)}
-.screen{position:relative;border-radius:30px;overflow:hidden;background:var(--abg);color:var(--aink);display:flex;flex-direction:column;height:452px}
-.screen::after{content:"";position:absolute;z-index:6;left:50%;bottom:6px;transform:translateX(-50%);width:86px;height:4px;border-radius:99px;background:rgba(27,27,24,.4)}
+.screen{position:relative;border-radius:30px;overflow:hidden;background:var(--abg);color:var(--aink);display:flex;flex-direction:column;height:470px}
+.screen::after{content:"";position:absolute;z-index:7;left:50%;bottom:6px;transform:translateX(-50%);width:86px;height:4px;border-radius:99px;background:rgba(27,27,24,.4)}
 .a-top{flex:none;padding:26px 13px 11px;display:flex;align-items:center;justify-content:space-between;gap:9px;color:#fff;background:linear-gradient(100deg,#6c5ce7 45%,#8a6ce6 74%,#f0a35e 125%)}
 .a-brand{display:flex;align-items:center;gap:9px;min-width:0}
 .a-brand svg{flex:none;width:30px;height:30px;border-radius:9px;box-shadow:0 0 0 2px rgba(255,255,255,.85)}
 .a-brand b{display:block;font-size:15px;line-height:1.1;font-weight:700}
 .a-brand small{display:block;font-size:11px;opacity:.92}
-.a-lang{flex:none;width:26px;height:26px;border-radius:50%;background:#fff;color:var(--ap);font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center}
-.a-back{font-size:13px;font-weight:700;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.5);padding:6px 14px;border-radius:999px}
+.a-title{font-size:14px;font-weight:700;white-space:nowrap}
+.a-lang{flex:none;width:28px;height:28px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center}
+.a-back{white-space:nowrap;font-size:13px;font-weight:700;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.5);padding:6px 14px;border-radius:999px}
 .a-body{flex:1;min-height:0;position:relative;display:flex;flex-direction:column}
-.a-search{position:absolute;top:10px;left:10px;right:10px;z-index:3;display:flex;align-items:center;gap:7px}
-.a-field{flex:1;background:#fff;border:1px solid var(--aline);border-radius:11px;padding:8px 11px;font-size:12px;color:#8b887e;white-space:nowrap;overflow:hidden}
-.a-btn{flex:none;width:31px;height:31px;border-radius:50%;background:#fff;border:1px solid var(--aline);display:flex;align-items:center;justify-content:center}
-.a-map{position:absolute;inset:0;background:#f1efe8}
+.a-search{position:absolute;top:10px;left:10px;right:10px;z-index:3;display:flex;align-items:center;gap:6px}
+.a-field{flex:1;background:rgba(255,255,255,.97);border:1px solid #e3dfd6;border-radius:11px;padding:8px 11px;font-size:12px;color:#8b887e;white-space:nowrap;overflow:hidden;box-shadow:0 4px 12px -8px rgba(0,0,0,.4)}
+.a-btn{flex:none;width:31px;height:31px;border-radius:50%;background:rgba(255,255,255,.97);border:1px solid #e3dfd6;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px -8px rgba(0,0,0,.4)}
+.a-map{position:absolute;inset:0;width:100%;height:100%;background:#f2f0eb}
 .a-recent{position:absolute;left:14px;right:14px;bottom:18px;z-index:3;background:var(--ap);color:#fff;border-radius:11px;text-align:center;padding:9px;font-size:12.5px;font-weight:700}
 .a-sheet{position:absolute;left:0;right:0;bottom:0;z-index:4;background:#fffdf6;border-top:1px solid var(--aline);border-radius:16px 16px 0 0;padding:13px 13px 22px;display:flex;flex-direction:column;gap:8px;box-shadow:0 -14px 34px -18px rgba(0,0,0,.4)}
 .a-grab{width:34px;height:4px;border-radius:99px;background:var(--aline);margin:0 auto 3px}
 .a-sheet h4{margin:0;font-size:13.5px;display:flex;align-items:center;gap:7px;color:var(--aink);font-family:'Lexend',var(--body)}
-.a-input{background:#fff;border:1px solid var(--aline);border-radius:9px;padding:8px 10px;font-size:12.5px}
 .a-addr{font-size:10.5px;color:var(--amuted)}
 .a-two{display:grid;grid-template-columns:1fr 1fr;gap:7px}
-.a-pill{border-radius:9px;padding:8px;text-align:center;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:5px}
-.a-fav{background:var(--aamber);color:#3a2a00}
-.a-point{background:#fff;border:1px solid var(--apoint);color:var(--apoint)}
+.a-pill{border-radius:9px;padding:8px;text-align:center;font-size:11.5px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:5px;background:#fff;border:1px solid var(--ap);color:var(--ap)}
 .a-go{background:var(--ap);color:#fff;border-radius:9px;padding:9px;text-align:center;font-size:12.5px;font-weight:700}
-.a-remove{background:#fff;border:1px solid var(--ared);color:var(--ared);border-radius:9px;padding:8px;text-align:center;font-size:12px;font-weight:700}
-.a-close{background:#fff;border:1px solid var(--aline);color:var(--ap);border-radius:9px;padding:8px;text-align:center;font-size:12px;font-weight:700}
-.a-dir{padding:12px 12px 20px;display:flex;flex-direction:column;gap:8px;overflow:hidden}
-.a-stat{font-size:12px;color:var(--amuted)}
-.a-stat b{font-size:19px;color:var(--ap);font-weight:700}
-.a-start{background:var(--ap);color:#fff;border-radius:9px;padding:9px;text-align:center;font-size:12.5px;font-weight:700}
 .a-hint{font-size:10px;color:var(--amuted);text-align:center}
-.a-hide{background:#fff;border:1px solid var(--ap);color:var(--ap);border-radius:9px;padding:8px;text-align:center;font-size:12px;font-weight:700}
-.a-turn{display:flex;gap:9px;align-items:flex-start;padding:8px 0;border-top:1px solid var(--aline)}
-.a-turn:first-of-type{border-top:0}
-.a-turn small{display:block;font-size:10px;color:var(--amuted)}
-.a-turn b{display:block;font-size:12px;font-weight:700;line-height:1.3}
-.shot figcaption{font-size:15px;font-weight:700;color:var(--purple-2);text-align:center}
+.a-days{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.a-days span{border:1px solid var(--aline);border-radius:9px;padding:6px 0;text-align:center;font-size:11px;font-weight:700;color:var(--amuted);background:#fff}
+.a-days span.on{border-color:var(--ap);color:#fff;background:var(--ap)}
+.a-steps{font-size:10.5px;color:var(--amuted);line-height:1.5}
+.a-steps b{color:var(--aink)}
+/* navigation screen: the turn banner on top, with its soft wave, and the trip bar below */
+.a-banner{position:absolute;top:10px;left:10px;right:10px;z-index:3;border-radius:14px;padding:10px 12px 8px;color:#fff;background:linear-gradient(120deg,#4b3fa8,#6c5ce7);box-shadow:0 10px 22px -12px rgba(43,33,120,.8);display:grid;grid-template-columns:auto 1fr;gap:2px 11px;align-items:center;overflow:hidden}
+.a-banner svg.turn{grid-row:span 2}
+.a-banner small{font-size:11px;opacity:.9}
+.a-banner b{font-size:14.5px;line-height:1.2}
+.a-banner .wave{grid-column:1/-1;margin-top:4px;width:100%;height:12px}
+.a-trip{position:absolute;left:10px;right:10px;bottom:18px;z-index:3;background:rgba(255,255,255,.98);border:1px solid #e3dfd6;border-radius:14px;padding:10px 12px;display:flex;align-items:center;justify-content:space-between;gap:8px;box-shadow:0 8px 22px -14px rgba(0,0,0,.45)}
+.a-trip b{display:block;font-size:17px;color:var(--ap);line-height:1.1}
+.a-trip small{font-size:10.5px;color:var(--amuted)}
+.a-trip .row{display:flex;gap:5px}
+.a-chip{font-size:10.5px;font-weight:700;border-radius:999px;padding:5px 9px;border:1px solid var(--ap);color:var(--ap);white-space:nowrap}
+.a-chip.end{border-color:var(--ared);color:var(--ared)}
+
+/* way to my door: the app's own four scenes take turns (5 s each): the main gate, parking, the
+   lobby and the lift. Drawn at the app's size (320 x 210) and scaled into the phone */
+.door-stage{position:absolute;left:0;right:0;top:0;height:230px;overflow:hidden;background:#f6f3ec}
+.cyc{position:relative}
+.cyc>*{position:absolute;opacity:0;animation:cyc 20s infinite}
+.cyc>:nth-child(2){animation-delay:5s}
+.cyc>:nth-child(3){animation-delay:10s}
+.cyc>:nth-child(4){animation-delay:15s}
+@keyframes cyc{0%{opacity:0}4%{opacity:1}22%{opacity:1}26%{opacity:0}100%{opacity:0}}
+.door-scenes{position:absolute;left:5px;top:42px;width:320px;height:210px;transform:scale(.725);transform-origin:0 0}
+.dw{left:0;top:0;width:320px;height:210px;border-radius:12px;overflow:hidden;--wall:#efe9dd;--wall2:#ddd5c5;--park-wall:#cfcbc2;--park-floor:#8f8c86}
+.dw div,.dw i{position:absolute;box-sizing:border-box}
+.door-label{position:absolute;top:10px;left:10px;right:60px;height:26px}
+.door-label span{left:0;top:0;background:rgba(255,255,255,.97);border:1px solid #e3dfd6;border-radius:999px;padding:5px 11px;font-size:11.5px;font-weight:700;color:#4b3fa8;white-space:nowrap;box-shadow:0 4px 12px -8px rgba(0,0,0,.4)}
+.door-dots{position:absolute;top:19px;right:12px;display:flex;gap:5px}
+.door-dots i{width:7px;height:7px;border-radius:99px;background:#d8d3c4;animation:dot 20s infinite}
+.door-dots i:nth-child(2){animation-delay:5s}.door-dots i:nth-child(3){animation-delay:10s}.door-dots i:nth-child(4){animation-delay:15s}
+@keyframes dot{0%{background:#d8d3c4;width:7px}4%{background:#6c5ce7;width:16px}22%{background:#6c5ce7;width:16px}26%{background:#d8d3c4;width:7px}100%{background:#d8d3c4;width:7px}}
+.door-say{height:32px}
+.door-say p{margin:0;left:0;right:0;top:0;font-size:11px;line-height:1.45;color:var(--amuted)}
+
+/* 1 · the main gate: the guard steps out and waves, the barrier lifts */
+.dw-gate{background:linear-gradient(#bfe0f4 0 62%,#a9a498 62%)}
+.dw-gate .road{left:50%;bottom:-20px;width:300px;height:100px;margin-left:-150px;background:#6d7078;clip-path:polygon(32% 0,68% 0,100% 100%,0 100%)}
+.dw-gate .wall{top:66px;height:64px;width:30%;background:repeating-linear-gradient(90deg,#e7dfd0 0 26px,#d9cfbd 26px 28px)}
+.dw-gate .wall.l{left:0}.dw-gate .wall.r{right:0}
+.dw-gate .tree{top:18px;width:58px;height:70px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#62b878,#3a8f55)}
+.dw-gate .tree.l{left:-8px}.dw-gate .tree.r{right:-10px}
+.dw-gate .pillar{top:40px;bottom:68px;width:26px;background:linear-gradient(90deg,#8b8e96,#c5c7cc 50%,#8b8e96)}
+.dw-gate .pillar.l{left:calc(50% - 76px)}.dw-gate .pillar.r{left:calc(50% + 50px)}
+.dw-gate .arch{left:calc(50% - 84px);width:168px;top:22px;height:30px;border-radius:6px;background:linear-gradient(#5b5f69,#3d4048);box-shadow:0 4px 8px rgba(0,0,0,.3)}
+.dw-gate .boom{left:calc(50% - 56px);bottom:104px;width:140px;height:9px;border-radius:5px;background:repeating-linear-gradient(90deg,#e23b32 0 18px,#fff 18px 36px);box-shadow:0 2px 3px rgba(0,0,0,.3);transform-origin:5px 50%;animation:dwBoom 5s infinite}
+@keyframes dwBoom{0%,34%{transform:rotate(0)}54%,90%{transform:rotate(-76deg)}100%{transform:rotate(0)}}
+.dw-gate .booth{right:8px;bottom:42px;width:82px;height:100px;background:#f7f4ec;border-radius:7px 7px 0 0;box-shadow:0 3px 8px rgba(0,0,0,.25)}
+.dw-gate .booth::before{content:'';position:absolute;left:-5px;right:-5px;top:-9px;height:13px;border-radius:5px;background:#4d7fbd}
+.dw-gate .booth i{left:12px;right:12px;top:14px;height:34px;border-radius:3px;background:linear-gradient(120deg,#bfe0f4,#eef8ff)}
+.dw-gate .sentry{position:absolute;right:86px;bottom:30px;width:62px;height:112px;animation:dwSentry 5s infinite}
+@keyframes dwSentry{0%{transform:translateX(26px);opacity:0}12%,100%{transform:none;opacity:1}}
+.dw-gate .arm{transform-origin:43px 52px;animation:dwWave 5s infinite}
+@keyframes dwWave{0%,14%{transform:rotate(0)}20%{transform:rotate(-16deg)}27%{transform:rotate(22deg)}34%{transform:rotate(-16deg)}41%{transform:rotate(22deg)}48%,100%{transform:rotate(0)}}
+.dw-gate .hump{left:50%;bottom:26px;width:236px;height:17px;margin-left:-118px;border-radius:50% 50% 3px 3px/100% 100% 3px 3px;background:repeating-linear-gradient(115deg,#f3c623 0 20px,#232428 20px 40px);box-shadow:0 4px 5px rgba(0,0,0,.3)}
+
+/* 2 · parking: the car rolls into its bay, the lights blink twice and it locks */
+.dw-park{background:linear-gradient(var(--park-wall) 0 44%,var(--park-floor) 44% 100%)}
+.dw-park .pipe{left:0;right:0;top:14px;height:7px;background:#a7a39a}
+.dw-park .sign-p{left:50%;top:24px;width:40px;height:40px;margin-left:-20px;border-radius:9px;background:#1a73e8;color:#fff;font-size:26px;font-weight:800;display:grid;place-items:center;box-shadow:0 2px 6px rgba(0,0,0,.35)}
+.dw-park .bay{left:50%;bottom:-30px;width:330px;height:150px;margin-left:-165px;clip-path:polygon(25% 0,75% 0,100% 100%,0 100%);background:#f3d34a}
+.dw-park .bay::after{content:'';position:absolute;inset:0;background:var(--park-floor);clip-path:polygon(27% 3%,73% 3%,95% 100%,5% 100%)}
+.dw-park .ride{position:absolute;bottom:22px;left:50%;width:150px;margin-left:-75px;filter:drop-shadow(0 8px 6px rgba(0,0,0,.35));animation:dwRide 5s infinite}
+@keyframes dwRide{0%{transform:translateY(120px) scale(1.5)}22%,100%{transform:none}}
+.dw-park .blink{opacity:.28;animation:dwBlink 5s infinite}
+@keyframes dwBlink{0%,30%{opacity:.28}31%,34%{opacity:1}35%,37%{opacity:.28}38%,41%{opacity:1}42%,100%{opacity:.28}}
+.dw-park .lock{right:12px;top:12px;width:50px;height:50px;border-radius:50%;background:#fff;display:grid;place-items:center;box-shadow:0 3px 10px rgba(0,0,0,.3);animation:dwLock 5s infinite}
+@keyframes dwLock{0%,24%{opacity:0;transform:scale(.6)}30%,100%{opacity:1;transform:none}}
+.dw-park .lock svg{width:31px;height:31px;animation:dwLockC 5s infinite}
+@keyframes dwLockC{0%,40%{color:#55534b}43%,100%{color:#1e8e3e}}
+.dw-park .shackle{animation:dwShackle 5s infinite}
+@keyframes dwShackle{0%,40%{transform:translateY(-4px)}43%,100%{transform:none}}
+
+/* 3 · the lobby: closer to the tower's entrance, the glass doors slide open, the lift is called */
+.dw-lobby{background:linear-gradient(#bfd9ee 0 60%,#a9a498 60%)}
+.dw-lobby .front{inset:0;transform-origin:50% 62%;animation:dwZoom 5s infinite}
+@keyframes dwZoom{0%,6%{transform:none}50%,100%{transform:scale(1.55)}}
+.dw-lobby .canopy{left:42px;right:42px;top:14px;height:38px;border-radius:6px;background:linear-gradient(#5b5f69,#3d4048);color:#fff;display:grid;place-items:center;font-size:19px;font-weight:800;box-shadow:0 4px 8px rgba(0,0,0,.3)}
+.dw-lobby .facade{left:28px;right:28px;top:52px;bottom:36px;background:var(--wall)}
+.dw-lobby .inside{left:44px;right:44px;top:10px;bottom:0;overflow:hidden;background:linear-gradient(#fff4dc 0 72%,#c6b79e 72%)}
+.dw-lobby .lift-doors{left:50%;bottom:28%;width:70px;height:62%;margin-left:-35px;background:linear-gradient(90deg,#b2b7c0,#eef0f4 49%,#70747d 49.5% 50.5%,#eef0f4 51%,#b2b7c0);box-shadow:0 0 0 4px #8c9099}
+.dw-lobby .call{left:50%;bottom:44%;margin-left:45px;width:8px;height:8px;display:grid;place-items:center;border-radius:50%;background:#2a2c33;color:#d8dae0;font-size:5px;line-height:1;box-shadow:0 0 0 1.5px #8c9099;animation:dwCall 5s infinite}
+@keyframes dwCall{0%,55%{background:#2a2c33;color:#d8dae0;box-shadow:0 0 0 1.5px #8c9099}58%,100%{background:#ffb347;color:#2b1a00;box-shadow:0 0 0 1.5px #8c9099,0 0 6px 2px rgba(255,179,71,.85)}}
+.dw-lobby .glass{top:0;bottom:0;width:50%;background:linear-gradient(115deg,rgba(190,225,245,.82),rgba(255,255,255,.55) 45%,rgba(165,205,232,.82));border:3px solid #5b5f69}
+.dw-lobby .glass.a{left:0;animation:dwGlassA 5s infinite}.dw-lobby .glass.b{right:0;animation:dwGlassB 5s infinite}
+@keyframes dwGlassA{0%,8%{transform:none}34%,100%{transform:translateX(-96%)}}
+@keyframes dwGlassB{0%,8%{transform:none}34%,100%{transform:translateX(96%)}}
+.dw-lobby .plant{bottom:28px;width:26px;height:56px;background:radial-gradient(circle at 50% 28%,#3e9c5a 0 42%,transparent 44%),linear-gradient(transparent 62%,#8a5a3a 62%)}
+.dw-lobby .plant.a{left:8px}.dw-lobby .plant.b{right:8px}
+.dw-lobby .steps{left:0;right:0;bottom:0;height:36px;background:linear-gradient(#b8b2a4,#938d80)}
+
+/* 4 · the lift: floor 7 pressed, the display counts up, the doors open on the 7th floor */
+.dw-lift{background:#c9ccd3}
+.dw-lift .ceil{left:0;right:0;top:0;height:28px;background:linear-gradient(#f6f7fa,#d9dce2);clip-path:polygon(0 0,100% 0,84% 100%,16% 100%)}
+.dw-lift .lift-floor{left:0;right:0;bottom:0;height:30px;background:linear-gradient(#8d8780,#6d6862);clip-path:polygon(16% 0,84% 0,100% 100%,0 100%)}
+.dw-lift .wall-l,.dw-lift .wall-r{top:0;bottom:0;width:16%}
+.dw-lift .wall-l{left:0;background:linear-gradient(90deg,#a9adb6,#d2d5db);clip-path:polygon(0 0,100% 28px,100% calc(100% - 30px),0 100%)}
+.dw-lift .wall-r{right:0;background:linear-gradient(270deg,#a9adb6,#d2d5db);clip-path:polygon(0 28px,100% 0,100% 100%,0 calc(100% - 30px))}
+.dw-lift .back-wall{left:16%;right:16%;top:28px;bottom:30px;background:#b6bac2;perspective:560px}
+.dw-lift .cabin{inset:0}
+.dw-lift .display{left:6px;top:2px;width:calc(100% - 66px);height:20px}
+.dw-lift .display span{position:absolute;left:50%;top:1px;transform:translateX(-50%);background:#14151a;color:#ffb347;font-weight:800;font-size:13px;line-height:18px;padding:0 9px;border-radius:4px;min-width:46px;text-align:center;white-space:nowrap;opacity:0}
+.dw-lift .n1{animation:dwN1 5s infinite}.dw-lift .n3{animation:dwN3 5s infinite}.dw-lift .n5{animation:dwN5 5s infinite}.dw-lift .n7{animation:dwN7 5s infinite}
+@keyframes dwN1{0%,19%{opacity:1}20%,100%{opacity:0}}
+@keyframes dwN3{0%,19%{opacity:0}20%,34%{opacity:1}35%,100%{opacity:0}}
+@keyframes dwN5{0%,34%{opacity:0}35%,49%{opacity:1}50%,100%{opacity:0}}
+@keyframes dwN7{0%,49%{opacity:0}50%,100%{opacity:1}}
+.dw-lift .opening{left:6px;width:calc(100% - 66px);top:24px;bottom:0;overflow:hidden;background:#22242b;box-shadow:inset 0 0 0 3px #8c9099}
+.dw-lift .band{left:0;right:0;height:46px;top:-60px;background:linear-gradient(transparent,rgba(255,255,255,.28),transparent);animation:dwBand 5s infinite}
+@keyframes dwBand{0%,8%{top:-60px}20%{top:110%}20.01%{top:-60px}33%{top:110%}33.01%{top:-60px}46%{top:110%}100%{top:110%}}
+.dw-lift .landing{inset:0;background:linear-gradient(var(--wall),var(--wall2));display:grid;place-items:center;animation:dwLanding 5s infinite}
+@keyframes dwLanding{0%,56%{opacity:0}64%,100%{opacity:1}}
+.dw-lift .landing b{font-size:46px;font-weight:800;color:#6c5ce7;line-height:1;transform:translateY(-6px)}
+.dw-lift .landing::after{content:'';position:absolute;left:0;right:0;bottom:0;height:18px;background:#a7a093}
+.dw-lift .slide{top:0;bottom:0;width:50%;background:linear-gradient(100deg,#c3c7cf,#eef0f4 42%,#b2b7c0 75%,#d4d7dd)}
+.dw-lift .slide.a{left:0;border-right:1px solid #70747d;animation:dwSlideA 5s infinite}
+.dw-lift .slide.b{right:0;border-left:1px solid #70747d;animation:dwSlideB 5s infinite}
+@keyframes dwSlideA{0%,56%{transform:none}74%,100%{transform:translateX(-100%)}}
+@keyframes dwSlideB{0%,56%{transform:none}74%,100%{transform:translateX(100%)}}
+.dw-lift .panel{right:4px;top:6px;width:52px;bottom:6px;padding:4px;border-radius:6px;background:linear-gradient(135deg,#5b5f69,#3d4048);display:grid;grid-template-columns:1fr 1fr;gap:3px;align-content:center;transform:rotateY(-14deg);transform-origin:right center}
+.dw-lift .key{aspect-ratio:1;border-radius:50%;display:grid;place-items:center;font-size:9px;font-weight:700;color:#d8dae0;background:#2a2c33;box-shadow:0 0 0 1px #777b85}
+.dw-lift .key.lit{animation:dwKey 5s infinite}
+@keyframes dwKey{0%,5%{background:#2a2c33;color:#d8dae0;box-shadow:0 0 0 1px #777b85;transform:none}7%{transform:scale(.82)}9%,100%{background:#ffb347;color:#2b1a00;box-shadow:0 0 0 1px #ffd9a1,0 0 10px 2px rgba(255,179,71,.85);transform:none}}
+
+
+/* the navigation phone: a tilted 3D view, buildings standing up from the map */
+.nav3d{position:absolute;inset:0;overflow:hidden;perspective:360px;perspective-origin:50% 14%;background:linear-gradient(#e9ecf3,#efede6 40%)}
+.nav3d::after{content:"";position:absolute;left:0;right:0;top:0;height:46%;background:linear-gradient(#e9ecf3 30%,rgba(233,236,243,0));pointer-events:none}
+.nav3d .plane{position:absolute;left:50%;bottom:-70px;width:340px;height:620px;margin-left:-170px;transform-origin:50% 100%;transform:rotateX(62deg);transform-style:preserve-3d}
+.nav3d .plane svg{position:absolute;inset:0;display:block}
+.nav3d .b{position:absolute;left:var(--x);top:var(--y);width:var(--w);height:var(--d);transform-style:preserve-3d}
+.nav3d .b i{position:absolute;display:block}
+.nav3d .b .t{inset:0;transform:translateZ(var(--h));background:#fdfcf8;box-shadow:inset 0 0 0 1px rgba(0,0,0,.05)}
+.nav3d .b .f{left:0;bottom:0;width:100%;height:var(--h);transform-origin:50% 100%;transform:rotateX(-90deg);background:#e8e4db}
+.nav3d .b .l{left:0;top:0;width:var(--h);height:100%;transform-origin:0 50%;transform:rotateY(-90deg);background:#d9d4c9}
+.nav3d .b .r{right:0;top:0;width:var(--h);height:100%;transform-origin:100% 50%;transform:rotateY(90deg);background:#e0dbd1}
+.nav3d .b.lav .t{background:#eeebfd}.nav3d .b.lav .f{background:#d9d3f8}.nav3d .b.lav .l{background:#c8c1f0}.nav3d .b.lav .r{background:#d1cbf4}
+.shot figcaption{font-size:15px;font-weight:700;color:var(--purple-2);text-align:center;max-width:260px}
 
 .chips{display:flex;flex-wrap:wrap;gap:11px}
 .pill{display:inline-flex;align-items:center;gap:9px;min-height:44px;padding:0 18px;border-radius:999px;border:1px solid var(--line);background:#fff;font-size:15px;font-weight:700;color:var(--muted)}
 .pill.on{color:#fff;background:linear-gradient(100deg,var(--teal),var(--lime));border-color:transparent}
+.chip-label{width:100%;font-size:13px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:6px}
+.chip-label:first-child{margin-top:0}
 
 .closer{padding:92px 0;border-top:1px solid var(--line);background:linear-gradient(130deg,#6c5ce7 40%,#8a6ce6 72%,#f0a35e 125%);color:#fff}
 .closer .lede{color:rgba(255,255,255,.92)}
@@ -181,19 +327,24 @@ footer{border-top:1px solid var(--line);background:#fff;padding:30px 0;font-size
 footer .wrap{display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between}
 footer a{color:var(--muted);text-decoration:none}
 footer a:hover{color:var(--purple)}
+.credits{width:100%;font-size:13px;opacity:.85}
 
-.reveal{opacity:0;transform:translateY(26px);transition:opacity .7s ease,transform .7s cubic-bezier(.2,.7,.3,1)}
+.reveal{opacity:0;transform:translateY(26px);transition:opacity .9s ease,transform .9s cubic-bezier(.2,.7,.3,1)}
 .reveal.in{opacity:1;transform:none}
 
 @media (max-width:620px){
-  .hero{padding:124px 0 68px;min-height:540px}
+  .hero{padding:124px 0 68px;min-height:560px}
   .navlinks a:not(.btn){display:none}
   .band{padding:70px 0}
+  .wrap{padding:0 16px}
 }
 @media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
   *{animation:none!important;transition:none!important}
   .reveal{opacity:1;transform:none}
-  .phone{transform:none}
+  .phone,.screens .shot .phone,.split-art .phone{transform:none}
+  .cyc>:first-child{opacity:1}
+  .door-dots i:first-child{background:#6c5ce7;width:16px}
 }
 </style>
 </head>
@@ -207,7 +358,8 @@ footer a:hover{color:var(--purple)}
     </a>
     <nav class="navlinks" aria-label="Main">
       <a href="#what">What it does</a>
-      <a href="#inside">Past the gate</a>
+      <a href="#features">Features</a>
+      <a href="#door">Way to your door</a>
       <a href="#next">What's next</a>
       <a class="btn btn-primary btn-sm" href="#test">Join the test</a>
     </nav>
@@ -218,14 +370,14 @@ footer a:hover{color:var(--purple)}
   <canvas id="scene" aria-hidden="true"></canvas>
   <div class="wrap">
     <div class="hero-copy">
-      <p class="eyebrow">Clean maps · Routes to the door</p>
+      <p class="eyebrow">Calm maps · Your own routes</p>
       <h1>Your map.<br><span class="grad">Your way.</span></h1>
-      <p class="lede">Most map apps show you everything at once. Easy Nav shows the road you need and keeps going after the gate, to the right building, entrance and parking spot.</p>
+      <p class="lede">A simple, clutter-free map that's easy to make your own. Big readable text, no ads, only what matters on screen, and a city that still feels alive, with metro trains, water metro boats and buses moving gently along.</p>
       <div class="cta-row">
         <a class="btn btn-primary" href="#test">Join the test group</a>
         <a class="btn btn-ghost" href="#what">See what it does</a>
       </div>
-      <span class="hero-note"><span class="dot"></span> In limited testing on Android · English and Malayalam</span>
+      <span class="hero-note"><span class="dot"></span> In limited testing on Android · Different languages available</span>
     </div>
   </div>
 </section>
@@ -234,52 +386,75 @@ footer a:hover{color:var(--purple)}
   <div class="wrap">
     <div class="head reveal">
       <p class="eyebrow">What it does</p>
-      <h2>Maps without the noise</h2>
-      <p>No sponsored pins, no review badges, no twelve layers of detail. Large type, few choices, and a route you can follow at a glance — whether you drive here every day or have never seen the place.</p>
+      <h2>A map for people who find maps too busy</h2>
+      <p>Easy Nav started as a big-text map for our elders. It is growing into a map for everyone who finds the usual apps too busy, or too limited for how they really get around.</p>
     </div>
     <div class="grid">
       <article class="card reveal tilt">
-        <span class="ico"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="#8ed33f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M3 12h12M3 18h7"/></svg></span>
-        <h3>Only what matters</h3>
-        <p>Main roads and the places people actually ask for. Everything else stays off the screen.</p>
+        <span class="ico"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="#5a9e22" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M3 12h12M3 18h7"/></svg></span>
+        <h3>Simple and calm</h3>
+        <p>A clean map in soft greys with only what matters. No ads, no clutter, big readable text. Highways, water and metro lines in gentle colours.</p>
       </article>
       <article class="card reveal tilt">
-        <span class="ico"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="#8ed33f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h9M8 3v2M5 9c2 4 5 6 8 7M11 5c-1 5-4 8-7 10"/><path d="M13 21l4-10 4 10M14.5 17h5"/></svg></span>
-        <h3>Switch language in a tap</h3>
-        <p>English and Malayalam today, with more as the map grows. Place names read the way people say them.</p>
+        <span class="ico"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="#5a9e22" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><path d="M9.5 9.5l1.8 1.8 3.4-3.4"/></svg></span>
+        <h3>Easy to make your own</h3>
+        <p>Save places, homes and your own routes in a few taps, and see them on the map the way you want.</p>
       </article>
       <article class="card reveal tilt">
-        <span class="ico"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="#8ed33f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="8"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2"/></svg></span>
-        <h3>Starts where you stand</h3>
-        <p>Picks up your location and shows the road to take. One button turns on spoken directions.</p>
+        <span class="ico"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="#5a9e22" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.4 3 14.6 0 18M12 3c-3 3.4-3 14.6 0 18"/></svg></span>
+        <h3>Different languages available</h3>
+        <p>Switch the language with one tap. Screens, place names and spoken directions all follow, and more languages are on the way.</p>
       </article>
       <article class="card reveal tilt">
-        <span class="ico"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="#8ed33f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21V8l5-3 5 3v13"/><path d="M13 21V11l4-2 4 2v10"/><path d="M6 12h3M6 16h3"/></svg></span>
-        <h3>Routes drawn by hand</h3>
-        <p>Hospitals and apartment compounds get a route someone walked first, not one guessed from satellite data.</p>
+        <span class="ico"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="#5a9e22" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21c4.5-2.4 7-5.6 7-9.5V5l-7-2-7 2v6.5c0 3.9 2.5 7.1 7 9.5z"/><path d="M9 12l2 2 4-4"/></svg></span>
+        <h3>Kind to every user</h3>
+        <p>Large tap targets, clear words instead of icons alone, and nothing lost by accident: deleting always takes two taps.</p>
       </article>
     </div>
   </div>
 </section>
 
-<section class="band" id="inside">
+<section class="band band-raise" id="inside">
   <div class="wrap">
-    <div class="split-copy reveal" style="max-width:48rem">
-      <p class="eyebrow">Past the gate</p>
-      <h2>The last two hundred metres</h2>
-      <p class="lede">A normal map drops you at the entrance and stops. That is exactly where most people get lost — in a hospital block, a tech park, a gated compound with eleven towers and one visitor gate that is open.</p>
-      <p class="lede">Easy Nav keeps going: which gate, which tower, which lift, where to leave the car. Step by step, in plain words.</p>
-      <div class="chips">
-        <span class="pill on">Gate</span><span class="pill on">Tower</span><span class="pill on">Parking</span><span class="pill">Lift</span>
-      </div>
+    <div class="head reveal">
+      <p class="eyebrow">Inside the app</p>
+      <h2>Quiet, but never lifeless</h2>
+      <p>Metro trains, water metro boats, buses, trains and autos move slowly along their lines. They stop, wait as if for people to board, then move on. They are only there to make the map feel alive, they step aside while you navigate, and you can turn them off.</p>
     </div>
     <div class="screens">
 
+      <!-- 1 · the main map -->
       <figure class="shot reveal">
         <div class="phone"><span class="vol"></span><div class="screen">
-          <div class="a-top"><div class="a-brand"><svg viewBox="0 0 100 100" aria-hidden="true"><defs><linearGradient id="lg1" x1="22" y1="0" x2="78" y2="0" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#0a8a8f"/><stop offset="1" stop-color="#7ccf3a"/></linearGradient></defs><rect x=".5" y=".5" width="99" height="99" rx="22" fill="#fff" stroke="#dde9e6"/><g fill="none" stroke="#e0eae7" stroke-linecap="round"><path d="M0 18L100 29" stroke-width="3"/><path d="M0 64L100 57" stroke-width="6"/><path d="M30 0L23 100" stroke-width="3"/><path d="M63 0L70 100" stroke-width="5"/><path d="M88 0L94 100" stroke-width="2.5"/></g><path d="M27 40Q50 92 73 40" fill="none" stroke="url(#lg1)" stroke-width="9" stroke-linecap="round"/><circle cx="27" cy="36" r="9" fill="#0a8a8f"/><circle cx="73" cy="36" r="9" fill="#7ccf3a"/><circle cx="73" cy="36" r="3.5" fill="#fff"/></svg><span><b>Easy Nav</b><small>Good afternoon</small></span></div><span class="a-lang">മ</span></div>
+          <div class="a-top"><div class="a-brand"><svg viewBox="0 0 100 100" aria-hidden="true"><defs><linearGradient id="lg1" x1="22" y1="0" x2="78" y2="0" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#0a8a8f"/><stop offset="1" stop-color="#7ccf3a"/></linearGradient></defs><rect x=".5" y=".5" width="99" height="99" rx="22" fill="#fff" stroke="#dde9e6"/><path d="M27 40Q50 92 73 40" fill="none" stroke="url(#lg1)" stroke-width="9" stroke-linecap="round"/><circle cx="27" cy="36" r="9" fill="#0a8a8f"/><circle cx="73" cy="36" r="9" fill="#7ccf3a"/><circle cx="73" cy="36" r="3.5" fill="#fff"/></svg><span><b>Easy Nav</b><small>Good afternoon</small></span></div><span class="a-lang" title="Change language"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6c5ce7" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.4 3 14.6 0 18M12 3c-3 3.4-3 14.6 0 18"/></svg></span></div>
           <div class="a-body">
-            <svg class="a-map" viewBox="0 0 260 400" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="260" height="400" fill="#f1efe8"/><g stroke="#e2dfd4" fill="none" stroke-linecap="round"><path d="M-10 92L270 76" stroke-width="11"/><path d="M-10 236L270 258" stroke-width="14"/><path d="M64 -10L48 410" stroke-width="10"/><path d="M178 -10L196 410" stroke-width="12"/><path d="M-10 330L270 318" stroke-width="7"/><path d="M118 -10L126 410" stroke-width="6"/><path d="M-10 160L270 174" stroke-width="6"/></g><path d="M-10 404Q70 300 120 250" stroke="#cfe3f5" stroke-width="20" fill="none"/><path d="M56 300L56 170L186 170L186 96" stroke="#6c5ce7" stroke-width="4.5" fill="none" stroke-dasharray="9 7" stroke-linecap="round"/><circle cx="56" cy="300" r="11" fill="#fff" stroke="#c97a00" stroke-width="3"/><text x="56" y="305" text-anchor="middle" font-size="12" fill="#c97a00">★</text><circle cx="118" cy="170" r="11" fill="#fff" stroke="#6c5ce7" stroke-width="3"/><text x="118" y="175" text-anchor="middle" font-size="11" font-family="sans-serif" fill="#6c5ce7">4</text><circle cx="186" cy="96" r="12" fill="#fff" stroke="#1e8e3e" stroke-width="3"/><text x="186" y="101" text-anchor="middle" font-size="12" fill="#1e8e3e">⚑</text><circle cx="92" cy="352" r="10" fill="#fff" stroke="#1a73e8" stroke-width="3"/><text x="92" y="357" text-anchor="middle" font-size="10" font-family="sans-serif" fill="#1a73e8">2</text></svg>
+            <svg class="a-map" viewBox="0 0 260 420" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+              <rect width="260" height="420" fill="#f2f0eb"/>
+              <path id="river1" d="M-30 300 C30 280 70 320 96 352 S150 420 190 450" stroke="#d3edef" stroke-width="44" fill="none" stroke-linecap="round"/>
+              <g stroke="#e4e1d8" stroke-width="5" fill="none" stroke-linecap="round"><path d="M-10 70L270 58"/><path d="M150 -10L162 440"/><path d="M-10 172L270 180"/><path d="M112 222L134 440"/><path d="M176 316L270 306"/></g>
+              <path id="lane1" d="M66 -20L44 270" stroke="#e4e1d8" stroke-width="5" fill="none" stroke-linecap="round"/>
+              <path d="M214 -10L228 440" stroke="#ecd592" stroke-width="13" fill="none"/><path d="M214 -10L228 440" stroke="#f9e5a3" stroke-width="9" fill="none"/>
+              <path id="sh1" d="M-20 236L280 220" stroke="#c5dfa8" stroke-width="11" fill="none"/><path d="M-20 236L280 220" stroke="#deefc8" stroke-width="7.5" fill="none"/>
+              <path d="M150 -10L140 130L118 440" stroke="#efbcd6" stroke-width="3" fill="none" opacity=".75"/>
+              <path id="metro1" d="M-40 116L96 130L300 88" stroke="#9bd6c3" stroke-width="11" fill="none" opacity=".3"/><path d="M-40 116L96 130L300 88" stroke="#9bd6c3" stroke-width="3.5" fill="none"/>
+              <g fill="#fff" stroke="#6f9a8d" stroke-width="1.6"><circle cx="34" cy="124" r="3.6"/><circle cx="96" cy="130" r="3.6"/><circle cx="186" cy="111" r="3.6"/></g>
+              <path d="M-30 300 C30 280 70 320 96 352 S150 420 190 450" stroke="#7cb3dd" stroke-width="2" stroke-dasharray="5 5" fill="none"/>
+              <g fill="#fff" stroke="#7cb3dd" stroke-width="1.6"><circle cx="34" cy="296" r="3.2"/><circle cx="104" cy="362" r="3.2"/></g>
+              <!-- moving: metro train, water metro boat, bus, auto (they wait, move on, wait) -->
+              <g><g transform="scale(1.45)"><rect x="-17" y="-3" width="34" height="6" rx="2.6" fill="#5fd6c9" stroke="#2c9c90" stroke-width=".9"/><path d="M-5.5 -3v6M5.5 -3v6" stroke="#2c9c90" stroke-width=".9"/><rect x="13" y="-2" width="2.2" height="4" rx=".8" fill="#2c2f3a"/>
+                </g><animateMotion dur="46s" repeatCount="indefinite" rotate="auto" calcMode="linear" keyPoints="0;.17;.17;.33;.33;.63;.63;1" keyTimes="0;.12;.3;.42;.6;.76;.92;1"><mpath href="#metro1"/></animateMotion></g>
+              <g><g transform="scale(1.45)"><path d="M7 0Q3 -4 -5 -4H-7V4H-5Q3 4 7 0Z" fill="#fff" stroke="#9fc3dc" stroke-width=".6"/><rect x="-4" y="-2.4" width="6.5" height="4.8" rx="1.2" fill="#5fd6c9"/>
+                </g><animateMotion dur="58s" repeatCount="indefinite" rotate="auto" calcMode="linear" keyPoints="0;.2;.2;.5;.5;1" keyTimes="0;.18;.36;.62;.8;1"><mpath href="#river1"/></animateMotion></g>
+              <g><g transform="scale(1.45)"><rect x="-6" y="-3.2" width="12" height="6.4" rx="1.8" fill="#e8716b" stroke="#a83f3b" stroke-width=".7"/><rect x="3.4" y="-2.4" width="1.8" height="4.8" rx=".6" fill="#2c2f3a"/>
+                </g><animateMotion dur="40s" repeatCount="indefinite" rotate="auto" calcMode="linear" keyPoints="0;.3;.3;.62;.62;1" keyTimes="0;.2;.38;.6;.78;1"><mpath href="#sh1"/></animateMotion></g>
+              <g><g transform="scale(1.45)"><rect x="-3.6" y="-2.8" width="7.2" height="5.6" rx="1.8" fill="#2fa35a"/><rect x="-3" y="-2.2" width="3.8" height="4.4" rx="1" fill="#f4c430"/>
+                </g><animateMotion dur="34s" repeatCount="indefinite" rotate="auto" calcMode="linear" keyPoints="0;.45;.45;1" keyTimes="0;.35;.6;1"><mpath href="#lane1"/></animateMotion></g>
+              <!-- your places -->
+              <circle cx="120" cy="52" r="11" fill="#fff" stroke="#c97a00" stroke-width="3"/><text x="120" y="57" text-anchor="middle" font-size="12" fill="#c97a00">★</text>
+              <circle cx="196" cy="268" r="11" fill="#fff" stroke="#1e8e3e" stroke-width="3"/><text x="196" y="273" text-anchor="middle" font-size="12" fill="#1e8e3e">⚑</text>
+              <circle cx="70" cy="200" r="11" fill="#fff" stroke="#6c5ce7" stroke-width="3"/><path d="M64.5 201l5.5-4.5 5.5 4.5M66 200v5h8v-5" fill="none" stroke="#6c5ce7" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle cx="146" cy="168" r="16" fill="#1a73e8" opacity=".16"/><circle cx="146" cy="168" r="6.5" fill="#1a73e8" stroke="#fff" stroke-width="2.5"/>
+            </svg>
             <div class="a-search">
               <span class="a-field">Search for a place…</span>
               <span class="a-btn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#6c5ce7" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7M5 10v10h14V10"/></svg></span>
@@ -289,49 +464,150 @@ footer a:hover{color:var(--purple)}
             <div class="a-recent">◴ Recent</div>
           </div>
         </div></div>
-        <figcaption>Your places and routes, nothing else</figcaption>
+        <figcaption>A calm map, with the city moving gently along</figcaption>
       </figure>
 
+      <!-- 2 · navigating -->
       <figure class="shot reveal">
         <div class="phone"><span class="vol"></span><div class="screen">
-          <div class="a-top"><div class="a-brand"><svg viewBox="0 0 100 100" aria-hidden="true"><defs><linearGradient id="lg1" x1="22" y1="0" x2="78" y2="0" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#0a8a8f"/><stop offset="1" stop-color="#7ccf3a"/></linearGradient></defs><rect x=".5" y=".5" width="99" height="99" rx="22" fill="#fff" stroke="#dde9e6"/><g fill="none" stroke="#e0eae7" stroke-linecap="round"><path d="M0 18L100 29" stroke-width="3"/><path d="M0 64L100 57" stroke-width="6"/><path d="M30 0L23 100" stroke-width="3"/><path d="M63 0L70 100" stroke-width="5"/><path d="M88 0L94 100" stroke-width="2.5"/></g><path d="M27 40Q50 92 73 40" fill="none" stroke="url(#lg1)" stroke-width="9" stroke-linecap="round"/><circle cx="27" cy="36" r="9" fill="#0a8a8f"/><circle cx="73" cy="36" r="9" fill="#7ccf3a"/><circle cx="73" cy="36" r="3.5" fill="#fff"/></svg><span><b>Easy Nav</b><small>Good afternoon</small></span></div><span class="a-lang">മ</span></div>
+          <div class="a-top"><div class="a-brand"><svg viewBox="0 0 100 100" aria-hidden="true"><defs><linearGradient id="lg2" x1="22" y1="0" x2="78" y2="0" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#0a8a8f"/><stop offset="1" stop-color="#7ccf3a"/></linearGradient></defs><rect x=".5" y=".5" width="99" height="99" rx="22" fill="#fff" stroke="#dde9e6"/><path d="M27 40Q50 92 73 40" fill="none" stroke="url(#lg2)" stroke-width="9" stroke-linecap="round"/><circle cx="27" cy="36" r="9" fill="#0a8a8f"/><circle cx="73" cy="36" r="9" fill="#7ccf3a"/><circle cx="73" cy="36" r="3.5" fill="#fff"/></svg><span><b>Easy Nav</b><small>Navigating</small></span></div><span class="a-lang" title="Change language"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6c5ce7" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.4 3 14.6 0 18M12 3c-3 3.4-3 14.6 0 18"/></svg></span></div>
           <div class="a-body">
-            <svg class="a-map" viewBox="0 0 260 400" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="260" height="400" fill="#f1efe8"/><g stroke="#e2dfd4" fill="none" stroke-linecap="round"><path d="M-10 92L270 76" stroke-width="11"/><path d="M-10 236L270 258" stroke-width="14"/><path d="M64 -10L48 410" stroke-width="10"/><path d="M178 -10L196 410" stroke-width="12"/><path d="M-10 330L270 318" stroke-width="7"/><path d="M118 -10L126 410" stroke-width="6"/><path d="M-10 160L270 174" stroke-width="6"/></g><path d="M-10 404Q70 300 120 250" stroke="#cfe3f5" stroke-width="20" fill="none"/><path d="M56 300L56 170L186 170L186 96" stroke="#6c5ce7" stroke-width="4.5" fill="none" stroke-dasharray="9 7" stroke-linecap="round"/><circle cx="56" cy="300" r="11" fill="#fff" stroke="#c97a00" stroke-width="3"/><text x="56" y="305" text-anchor="middle" font-size="12" fill="#c97a00">★</text><circle cx="118" cy="170" r="11" fill="#fff" stroke="#6c5ce7" stroke-width="3"/><text x="118" y="175" text-anchor="middle" font-size="11" font-family="sans-serif" fill="#6c5ce7">4</text><circle cx="186" cy="96" r="12" fill="#fff" stroke="#1e8e3e" stroke-width="3"/><text x="186" y="101" text-anchor="middle" font-size="12" fill="#1e8e3e">⚑</text><circle cx="92" cy="352" r="10" fill="#fff" stroke="#1a73e8" stroke-width="3"/><text x="92" y="357" text-anchor="middle" font-size="10" font-family="sans-serif" fill="#1a73e8">2</text></svg>
-            <div class="a-search"><span class="a-field">Search for a place…</span>
-              <span class="a-btn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#6c5ce7" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7M5 10v10h14V10"/></svg></span>
+            <div class="nav3d" aria-hidden="true"><div class="plane">
+              <svg viewBox="0 0 340 620" width="340" height="620">
+                <rect width="340" height="620" fill="#efede6"/>
+                <g stroke="#e3e0d6" stroke-width="12" fill="none"><path d="M0 80H340M0 422H340M64 0V620M272 0V620"/></g>
+                <path d="M0 200H340" stroke="#c5dfa8" stroke-width="24"/><path d="M0 200H340" stroke="#deefc8" stroke-width="18"/>
+                <path d="M170 0V620" stroke="#ecd592" stroke-width="28"/><path d="M170 0V620" stroke="#f9e5a3" stroke-width="22"/>
+                <path id="nav3" d="M170 640V222Q170 200 148 200H-20" stroke="#fff" stroke-width="13" fill="none" stroke-linejoin="round"/>
+                <path d="M170 640V222Q170 200 148 200H-20" stroke="#6c5ce7" stroke-width="8" fill="none" stroke-linejoin="round"/>
+                <g><path d="M0 -12L9 9L0 4L-9 9Z" fill="#1a73e8" stroke="#fff" stroke-width="2.4" stroke-linejoin="round" transform="rotate(90)"/>
+                  <animateMotion dur="24s" repeatCount="indefinite" rotate="auto" calcMode="linear" keyPoints="0.24;.44;.44;.56" keyTimes="0;.55;.7;1"><mpath href="#nav3"/></animateMotion></g>
+              </svg>
+              <i class="b" style="--x:78px;--y:230px;--w:60px;--d:70px;--h:40px"><i class="t"></i><i class="f"></i><i class="l"></i><i class="r"></i></i><i class="b" style="--x:82px;--y:330px;--w:54px;--d:70px;--h:26px"><i class="t"></i><i class="f"></i><i class="l"></i><i class="r"></i></i><i class="b" style="--x:78px;--y:432px;--w:64px;--d:60px;--h:34px"><i class="t"></i><i class="f"></i><i class="l"></i><i class="r"></i></i><i class="b" style="--x:80px;--y:520px;--w:56px;--d:70px;--h:20px"><i class="t"></i><i class="f"></i><i class="l"></i><i class="r"></i></i><i class="b" style="--x:8px;--y:236px;--w:40px;--d:50px;--h:22px"><i class="t"></i><i class="f"></i><i class="l"></i><i class="r"></i></i><i class="b lav" style="--x:10px;--y:320px;--w:42px;--d:80px;--h:48px"><i class="t"></i><i class="f"></i><i class="l"></i><i class="r"></i></i><i class="b" style="--x:6px;--y:440px;--w:46px;--d:60px;--h:18px"><i class="t"></i><i class="f"></i><i class="l"></i><i class="r"></i></i><i class="b" style="--x:8px;--y:520px;--w:44px;--d:70px;--h:30px"><i class="t"></i><i class="f"></i><i class="l"></i><i class="r"></i></i><i class="b" style="--x:194px;--y:226px;--w:62px;--d:60px;--h:30px"><i class="t"></i><i class="f"></i><i class="l"></i><i class="r"></i></i><i class="b lav" style="--x:198px;--y:310px;--w:56px;--d:90px;--h:56px"><i class="t"></i><i class="f"></i><i class="l"></i><i class="r"></i></i><i class="b" style="--x:194px;--y:432px;--w:60px;--d:60px;--h:24px"><i class="t"></i><i class="f"></i><i class="l"></i><i class="r"></i></i><i class="b" style="--x:196px;--y:516px;--w:58px;--d:80px;--h:36px"><i class="t"></i><i class="f"></i><i class="l"></i><i class="r"></i></i><i class="b" style="--x:282px;--y:230px;--w:48px;--d:70px;--h:28px"><i class="t"></i><i class="f"></i><i class="l"></i><i class="r"></i></i><i class="b" style="--x:284px;--y:330px;--w:46px;--d:60px;--h:18px"><i class="t"></i><i class="f"></i><i class="l"></i><i class="r"></i></i><i class="b" style="--x:282px;--y:440px;--w:50px;--d:80px;--h:44px"><i class="t"></i><i class="f"></i><i class="l"></i><i class="r"></i></i><i class="b" style="--x:284px;--y:540px;--w:46px;--d:60px;--h:22px"><i class="t"></i><i class="f"></i><i class="l"></i><i class="r"></i></i><i class="b" style="--x:78px;--y:96px;--w:64px;--d:80px;--h:30px"><i class="t"></i><i class="f"></i><i class="l"></i><i class="r"></i></i><i class="b lav" style="--x:196px;--y:96px;--w:60px;--d:84px;--h:46px"><i class="t"></i><i class="f"></i><i class="l"></i><i class="r"></i></i><i class="b" style="--x:10px;--y:96px;--w:40px;--d:70px;--h:20px"><i class="t"></i><i class="f"></i><i class="l"></i><i class="r"></i></i><i class="b" style="--x:282px;--y:96px;--w:48px;--d:80px;--h:34px"><i class="t"></i><i class="f"></i><i class="l"></i><i class="r"></i></i><i class="b" style="--x:80px;--y:8px;--w:60px;--d:60px;--h:24px"><i class="t"></i><i class="f"></i><i class="l"></i><i class="r"></i></i><i class="b" style="--x:196px;--y:8px;--w:60px;--d:56px;--h:36px"><i class="t"></i><i class="f"></i><i class="l"></i><i class="r"></i></i><i class="b" style="--x:10px;--y:8px;--w:40px;--d:60px;--h:28px"><i class="t"></i><i class="f"></i><i class="l"></i><i class="r"></i></i><i class="b" style="--x:282px;--y:8px;--w:48px;--d:60px;--h:20px"><i class="t"></i><i class="f"></i><i class="l"></i><i class="r"></i></i>
+            </div></div>
+            <div class="a-banner">
+              <svg class="turn" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M18 21V12a4 4 0 0 0-4-4H6"/><path d="M10 4L6 8l4 4"/></svg>
+              <small>In 200 m</small>
+              <b>Turn left onto Ring Road</b>
+              <svg class="wave" viewBox="0 0 200 12" preserveAspectRatio="none"><path d="M0 6 Q12 0 25 6 T50 6 T75 6 T100 6 T125 6 T150 6 T175 6 T200 6" stroke="rgba(255,255,255,.55)" stroke-width="2" fill="none"><animate attributeName="d" dur="6s" repeatCount="indefinite" values="M0 6 Q12 0 25 6 T50 6 T75 6 T100 6 T125 6 T150 6 T175 6 T200 6;M0 6 Q12 12 25 6 T50 6 T75 6 T100 6 T125 6 T150 6 T175 6 T200 6;M0 6 Q12 0 25 6 T50 6 T75 6 T100 6 T125 6 T150 6 T175 6 T200 6"/></path></svg>
             </div>
-            <div class="a-sheet">
-              <span class="a-grab"></span>
-              <h4><span style="color:#1e8e3e">★</span> Saved place</h4>
-              <div class="a-input">City Hospital</div>
-              <p class="a-addr">Main Road, North Ward</p>
-              <div class="a-two"><span class="a-pill a-fav">★ Favorite</span><span class="a-pill a-point">◉ Point</span></div>
-              <div class="a-go">Go here</div>
-              <div class="a-remove"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#d9480f" stroke-width="2.2" stroke-linecap="round" style="vertical-align:-1px"><path d="M4 7h16M10 4h4M6 7l1 13h10l1-13M10 11v6M14 11v6"/></svg> Remove from saved</div>
-              <div class="a-close">Close</div>
+            <div class="a-trip">
+              <span><b>12 min</b><small>4.2 km · 10:42</small></span>
+              <span class="row"><span class="a-chip">🔊 Voice</span><span class="a-chip end">End</span></span>
             </div>
           </div>
         </div></div>
-        <figcaption>Save any place in one tap</figcaption>
+        <figcaption>Spoken turns, or a soft alert sound, even with the screen off</figcaption>
       </figure>
 
+      <!-- 3 · your own routes -->
       <figure class="shot reveal">
         <div class="phone"><span class="vol"></span><div class="screen">
-          <div class="a-top"><span class="a-back">‹ Back</span><span class="a-lang">മ</span></div>
-          <div class="a-body"><div class="a-dir">
-            <p class="a-stat"><b>13.8</b> km &nbsp; <b>19</b> min by car</p>
-            <div class="a-start">▶ Start navigation</div>
-            <p class="a-hint">Speaks each turn out loud as you go.</p>
-            <div class="a-hide">Hide the turns (30)</div>
-            <div class="a-turn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#1e8e3e" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="9" width="18" height="8" rx="2"/><circle cx="7.5" cy="19" r="1.6"/><circle cx="16.5" cy="19" r="1.6"/></svg><span><b>Start driving</b></span></div>
-            <div class="a-turn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#1e8e3e" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 20V11a4 4 0 0 1 4-4h7"/><path d="M14 3l4 4-4 4"/></svg><span><small>After 50 m</small><b>Turn RIGHT</b></span></div><div class="a-turn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#1e8e3e" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 20V11a4 4 0 0 1 4-4h7"/><path d="M14 3l4 4-4 4"/></svg><span><small>After 150 m</small><b>Turn RIGHT</b></span></div><div class="a-turn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#1e8e3e" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 20V11a4 4 0 0 1 4-4h7"/><path d="M14 3l4 4-4 4"/></svg><span><small>After 1.4 km</small><b>Turn LEFT</b></span></div><div class="a-turn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#1e8e3e" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 20V11a4 4 0 0 1 4-4h7"/><path d="M14 3l4 4-4 4"/></svg><span><small>After 50 m</small><b>Go STRAIGHT onto Ring Road</b></span></div><div class="a-turn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#1e8e3e" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 20V11a4 4 0 0 1 4-4h7"/><path d="M14 3l4 4-4 4"/></svg><span><small>After 150 m</small><b>Keep LEFT onto Link Road</b></span></div>
-          </div></div>
+          <div class="a-top"><span class="a-back">‹ Back</span><span class="a-title">Your routes</span><span class="a-lang" title="Change language"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6c5ce7" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.4 3 14.6 0 18M12 3c-3 3.4-3 14.6 0 18"/></svg></span></div>
+          <div class="a-body">
+            <svg class="a-map" viewBox="0 0 260 420" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+              <defs><linearGradient id="rg3" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#0a8a8f"/><stop offset="1" stop-color="#7ccf3a"/></linearGradient></defs>
+              <!-- zoomed out: a long drive across the region, through two towns and over a river -->
+              <g transform="translate(0 -16)">
+              <rect width="260" height="420" fill="#f2f0eb"/>
+              <path d="M96 -10C110 40 150 70 140 120S170 190 230 230" stroke="#d3edef" stroke-width="12" fill="none" stroke-linecap="round"/>
+              <path d="M-10 70C40 64 80 40 120 30S200 8 270 4M30 -10C40 40 20 90 40 140S30 200 50 240M180 -10C176 50 214 90 200 160M-10 196C60 186 120 196 270 170" stroke="#e4e1d8" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+              <path d="M-10 128C60 126 130 140 270 120" stroke="#c5dfa8" stroke-width="5" fill="none"/><path d="M-10 128C60 126 130 140 270 120" stroke="#deefc8" stroke-width="3" fill="none"/>
+              <path d="M28 166Q46 150 62 140T96 120Q122 106 136 100T156 90Q182 74 196 56T230 30L272 4" stroke="#ecd592" stroke-width="7" fill="none" stroke-linecap="round"/>
+              <path d="M28 166Q46 150 62 140T96 120Q122 106 136 100T156 90Q182 74 196 56T230 30L272 4" stroke="#f9e5a3" stroke-width="4.5" fill="none" stroke-linecap="round"/>
+              <g fill="#e6e2d8"><circle cx="96" cy="120" r="13"/><circle cx="156" cy="90" r="11"/><circle cx="230" cy="30" r="9"/><circle cx="28" cy="166" r="12"/></g>
+              <g font-family="Lexend,sans-serif" font-size="7.5" fill="#8b887e" font-weight="600"><text x="104" y="140">Town</text><text x="166" y="106">Town</text></g>
+              <path id="own3" d="M28 166Q46 150 62 140T96 120Q122 106 136 100T156 90Q182 74 196 56T230 30" stroke="url(#rg3)" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+              <g font-family="Lexend,sans-serif" font-size="9" font-weight="700" text-anchor="middle">
+                <circle cx="28" cy="166" r="8.5" fill="#fff" stroke="#0a8a8f" stroke-width="2.4"/><text x="28" y="169.2" fill="#0a8a8f">1</text>
+                <circle cx="96" cy="120" r="8.5" fill="#fff" stroke="#3e9a6a" stroke-width="2.4"/><text x="96" y="123.2" fill="#3e9a6a">2</text>
+                <circle cx="156" cy="90" r="8.5" fill="#fff" stroke="#5aac4e" stroke-width="2.4"/><text x="156" y="93.2" fill="#5aac4e">3</text>
+              </g>
+              <circle cx="230" cy="30" r="10.5" fill="#fff" stroke="#7ccf3a" stroke-width="2.6"/><path d="M224.5 31l5.5-4.5 5.5 4.5M226 30v5h8v-5" fill="none" stroke="#5a9e22" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+              <g transform="translate(14 22)"><rect width="34" height="13" rx="6.5" fill="#fff" stroke="#e3dfd6"/><path d="M6 8.5h22M6 6.5v4M28 6.5v4" stroke="#8b887e" stroke-width="1"/><text x="17" y="6" text-anchor="middle" font-family="Lexend,sans-serif" font-size="5.5" fill="#8b887e">20 km</text></g>
+              <g><circle r="5" fill="#1a73e8" stroke="#fff" stroke-width="2"/>
+                <animateMotion dur="36s" repeatCount="indefinite" calcMode="linear" keyPoints="0;.4;.4;.68;.68;1" keyTimes="0;.24;.36;.6;.72;1"><mpath href="#own3"/></animateMotion></g></g>
+            </svg>
+            <div class="a-sheet">
+              <span class="a-grab"></span>
+              <h4>🛣️ Trip to the native home</h4>
+              <p class="a-addr">146 km · 4 points, joined along the roads</p>
+              <div class="a-go">▶ Follow turn by turn</div>
+              <div class="a-two"><span class="a-pill">↩ Reverse</span><span class="a-pill">Hide from map</span></div>
+              <p class="a-hint">Hold a name and drag it to change the order</p>
+            </div>
+          </div>
         </div></div>
-        <figcaption>Spoken, turn-by-turn directions</figcaption>
+        <figcaption>Draw your own routes, and follow them turn by turn</figcaption>
       </figure>
 
     </div>
-  </section>
+  </div>
+</section>
+
+<section class="band" id="features">
+  <div class="wrap">
+    <div class="head reveal">
+      <p class="eyebrow">Features</p>
+      <h2>Helpful touches other map apps don't have</h2>
+      <p>Small things, each one asked for by someone who got lost, or nearly did.</p>
+    </div>
+    <div class="feats">
+      <div class="feat reveal"><span class="ico"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#6c5ce7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg></span><div><h3>Search that forgives</h3><p>Your saved places come first, then any place. Spelling slips and different spellings still find the right spot.</p></div></div>
+      <div class="feat reveal"><span class="ico"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#6c5ce7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/></svg></span><div><h3>Places, sorted your way</h3><p>Save favourites, points and spots, group favourites into categories, and set an alarm for a saved place.</p></div></div>
+      <div class="feat reveal"><span class="ico"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#6c5ce7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7M5 10v10h14V10"/></svg></span><div><h3>Homes, one tap away</h3><p>Go home in a tap. Keep more than one home, and hold and drag to put them in the order you like.</p></div></div>
+      <div class="feat reveal"><span class="ico"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#6c5ce7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="9" width="18" height="8" rx="2"/><circle cx="7.5" cy="19" r="1.6"/><circle cx="16.5" cy="19" r="1.6"/><path d="M6 9l2-4h8l2 4"/></svg></span><div><h3>By car, bike or on foot</h3><p>Time and kilometres at a glance, from where you are or from any saved place.</p></div></div>
+      <div class="feat reveal"><span class="ico"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#6c5ce7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="7 4 20 12 7 20 7 4"/></svg></span><div><h3>Practice drive</h3><p>Watch the whole trip play out on the map before you set off, so the real one feels familiar.</p></div></div>
+      <div class="feat reveal"><span class="ico"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#6c5ce7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg></span><div><h3>Voice, or a soft alert</h3><p>Hear every turn spoken, or choose a chime with a word or two. It keeps working with the screen off.</p></div></div>
+      <div class="feat reveal"><span class="ico"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#6c5ce7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6l6-3 6 3 6-3v15l-6 3-6-3-6 3z"/><path d="M9 3v15M15 6v15"/></svg></span><div><h3>The map without internet</h3><p>Save the map for 20 or 50 km around home. It quietly updates itself every month on Wi-Fi.</p></div></div>
+      <div class="feat reveal"><span class="ico"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#6c5ce7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></span><div><h3>Light, dark or automatic</h3><p>The whole map turns dark too. Switch between the calm street map and satellite whenever you like.</p></div></div>
+      <div class="feat reveal"><span class="ico"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#6c5ce7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg></span><div><h3>Trips worth looking back on</h3><p>A summary at the end of each trip, and six months of trips, routes and badges, kept only on your phone.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="band band-raise" id="door">
+  <div class="wrap split">
+    <div class="split-copy reveal">
+      <p class="eyebrow">Way to your door</p>
+      <h2>The last two hundred metres</h2>
+      <p class="lede">Map apps stop at the main gate, which is where most visitors get lost: a compound with eleven towers, a basement with three ramps, a lift nobody can find.</p>
+      <p class="lede">Mark the way once, from the main gate past the parking and lobby, up the lift to your door. Then send it as a message. Your guests open it and follow it step by step.</p>
+      <p class="lede">A shared way lasts 1, 7 or 30 days, as you choose. It lives on your phone, with no account and no server.</p>
+      <div class="chips">
+        <span class="pill on">Main gate</span><span class="pill on">Parking</span><span class="pill on">Lobby</span><span class="pill on">Lift</span><span class="pill on">Your door</span>
+      </div>
+    </div>
+    <div class="split-art">
+      <figure class="shot reveal">
+        <div class="phone"><span class="vol"></span><div class="screen">
+          <div class="a-top"><span class="a-back">‹ Back</span><span class="a-title">Way to my door</span><span class="a-lang" title="Change language"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6c5ce7" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.4 3 14.6 0 18M12 3c-3 3.4-3 14.6 0 18"/></svg></span></div>
+          <div class="a-body">
+            <!-- three short scenes take turns: the main gate, the lobby, the lift -->
+            <div class="door-stage">
+              <div class="cyc door-scenes">
+                <div class="dw dw-gate" aria-hidden="true"><div class="tree l"></div><div class="tree r"></div><div class="wall l"></div><div class="wall r"></div><div class="road"></div><div class="pillar l"></div><div class="pillar r"></div><div class="arch"></div><div class="boom"></div><div class="booth"><i></i></div><svg class="sentry" viewBox="0 0 62 112" aria-hidden="true"><ellipse cx="30" cy="108" rx="20" ry="3.5" fill="#000" opacity=".18"/><rect x="19" y="72" width="10" height="35" rx="3" fill="#2c3a55"/><rect x="31" y="72" width="10" height="35" rx="3" fill="#2c3a55"/><path d="M17 48Q17 42 24 42H36Q43 42 43 48V78H17Z" fill="#4d7fbd"/><rect x="26" y="44" width="8" height="16" fill="#2c3a55"/><rect x="11" y="46" width="8" height="28" rx="4" fill="#4d7fbd"/><g class="arm"><rect x="40" y="20" width="8" height="32" rx="4" fill="#4d7fbd"/><circle cx="44" cy="17" r="5.5" fill="#c98f62"/></g><circle cx="30" cy="31" r="11" fill="#c98f62"/><path d="M17 26Q18 13 30 13T43 26Z" fill="#2c3a55"/><rect x="15" y="24" width="30" height="4" rx="2" fill="#1d2840"/></svg><div class="hump"></div></div>
+                <div class="dw dw-park" aria-hidden="true"><div class="pipe"></div><div class="sign-p">P</div><div class="bay"></div><svg class="ride" viewBox="0 0 176 118" aria-hidden="true"><rect x="16" y="94" width="30" height="23" rx="6" fill="#17181c"/><rect x="130" y="94" width="30" height="23" rx="6" fill="#17181c"/><path d="M34 42 47 11Q50 4 58 4H118Q126 4 129 11L142 42Z" fill="#5647c7"/><path d="M45 40 54 15Q56 10 61 10H115Q120 10 122 15L131 40Z" fill="#2c2f3a"/><path d="M10 56Q12 42 30 41H146Q164 42 166 56L169 92Q169 101 159 101H17Q7 101 7 92Z" fill="#6c5ce7"/><rect x="12" y="52" width="38" height="17" rx="5" fill="#d93025"/><rect x="126" y="52" width="38" height="17" rx="5" fill="#d93025"/><rect class="blink" x="12" y="52" width="15" height="17" rx="5" fill="#ffc34d"/><rect class="blink" x="149" y="52" width="15" height="17" rx="5" fill="#ffc34d"/><rect x="62" y="72" width="52" height="16" rx="3" fill="#fff"/></svg><div class="lock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"><path class="shackle" d="M7.5 11V8a4.5 4.5 0 0 1 9 0v3"/><rect x="5" y="11" width="14" height="10" rx="2.6" fill="currentColor"/></svg></div></div>
+                <div class="dw dw-lobby" aria-hidden="true"><div class="front"><div class="canopy">Tower B</div><div class="facade"><div class="inside"><div class="lift-doors"></div><div class="call">▲</div><div class="glass a"></div><div class="glass b"></div></div></div><div class="steps"></div><div class="plant a"></div><div class="plant b"></div></div></div>
+                <div class="dw dw-lift" aria-hidden="true"><div class="ceil"></div><div class="wall-l"></div><div class="wall-r"></div><div class="lift-floor"></div><div class="back-wall"><div class="cabin"><div class="display"><span class="n1">▲ 1</span><span class="n3">▲ 3</span><span class="n5">▲ 5</span><span class="n7">▲ 7</span></div><div class="opening"><div class="landing"><b>7</b></div><div class="band"></div><div class="slide a"></div><div class="slide b"></div></div><div class="panel"><span class="key">12</span><span class="key">11</span><span class="key">10</span><span class="key">9</span><span class="key">8</span><span class="key lit">7</span><span class="key">6</span><span class="key">5</span><span class="key">4</span><span class="key">3</span><span class="key">2</span><span class="key">1</span></div></div></div></div>
+              </div>
+              <div class="cyc door-label"><span>1 · Main gate</span><span>2 · Parking</span><span>3 · Tower B lobby</span><span>4 · Lift to floor 7</span></div>
+              <div class="door-dots"><i></i><i></i><i></i><i></i></div>
+            </div>
+            <div class="a-sheet">
+              <span class="a-grab"></span>
+              <h4>🚪 Flat 7C, Tower B</h4>
+              <div class="cyc door-say"><p>Follow the way to the parking.</p><p>Parking reached. Visitor bays are on the left.</p><p>Arrived at Tower B. The lift is straight ahead.</p><p>Select floor 7. Flat 7C is on the left.</p></div>
+              <div class="a-days"><span>1 day</span><span class="on">7 days</span><span>30 days</span></div>
+              <div class="a-go">Share the way</div>
+            </div>
+          </div>
+        </div></div>
+        <figcaption>Main gate, parking, lobby and lift, one step at a time</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
 
 <section class="band">
   <div class="wrap">
@@ -340,9 +616,9 @@ footer a:hover{color:var(--purple)}
       <h2>Three steps, then you are there</h2>
     </div>
     <div class="steps">
-      <div class="step reveal"><span class="num">1</span><h3>Pick where you are going</h3><p>Tap home, a hospital, a station. No typing, no search results to read.</p></div>
-      <div class="step reveal"><span class="num">2</span><h3>Follow the road</h3><p>One clear line on a quiet map, or press once and hear every turn out loud.</p></div>
-      <div class="step reveal"><span class="num">3</span><h3>Find the right door</h3><p>At the gate the app switches to the inside route and walks you to the exact spot.</p></div>
+      <div class="step reveal"><span class="num">1</span><h3>Pick where you're going</h3><p>Tap a home, a saved place or a recent one, or search. Spelling slips are fine.</p></div>
+      <div class="step reveal"><span class="num">2</span><h3>Practise, then go</h3><p>Watch a practice drive if the way is new. Then follow one clear line, with the turn banner on top and the voice in your ear.</p></div>
+      <div class="step reveal"><span class="num">3</span><h3>Arrive, really</h3><p>It says you've arrived only when you're actually there, then ends the trip with a short summary.</p></div>
     </div>
   </div>
 </section>
@@ -351,17 +627,25 @@ footer a:hover{color:var(--purple)}
   <div class="wrap">
     <div class="head reveal">
       <p class="eyebrow">What's next</p>
-      <h2>Growing place by place</h2>
-      <p>Easy Nav is in limited testing with a small group. Coverage grows wherever someone asks for it — a hospital, a campus, an apartment complex, a whole town.</p>
+      <h2>Growing step by step</h2>
+      <p>Easy Nav is in limited testing with a small group on Android. Next comes login, so each person gets their own saved places, synced across phone and web, and then a wider launch.</p>
     </div>
     <div class="chips reveal">
+      <span class="chip-label">In the app today</span>
       <span class="pill on">Clutter-free map</span>
-      <span class="pill on">Custom inside routes</span>
-      <span class="pill on">English · Malayalam</span>
-      <span class="pill">Spoken directions</span>
+      <span class="pill on">Your own routes</span>
+      <span class="pill on">Practice drive</span>
+      <span class="pill on">Map without internet</span>
+      <span class="pill on">Dark mode</span>
+      <span class="pill on">Moving metro, boats and buses</span>
+      <span class="pill on">Way to your door</span>
+      <span class="pill on">Different languages</span>
+      <span class="chip-label">Coming next</span>
+      <span class="pill">Login and sync</span>
+      <span class="pill">Google Play, then the App Store</span>
+      <span class="pill">More cities</span>
       <span class="pill">More languages</span>
-      <span class="pill">More places and regions</span>
-      <span class="pill">Installable Android app</span>
+      <span class="pill">iPhone</span>
     </div>
   </div>
 </section>
@@ -371,8 +655,8 @@ footer a:hover{color:var(--purple)}
     <div class="split-copy reveal">
       <p class="eyebrow">Why it exists</p>
       <h2>It started with one wrong turn</h2>
-      <p class="lede">My parents-in-law could not find their way to the hospital, and visiting relatives kept circling our apartment compound looking for the right tower. The map apps were not wrong, only too busy to be read while driving.</p>
-      <p class="lede">So Easy Nav got built — first for them, then for anyone who would rather be shown one road than offered forty. It is a side project, built and tested in the open, and it gets better every time someone says where they got lost.</p>
+      <p class="lede">My parents-in-law couldn't find their way to the hospital, and visiting relatives kept circling our apartment compound looking for the right tower. The map apps weren't wrong. They were just too busy to read while driving.</p>
+      <p class="lede">So Easy Nav got built, first for them, then for anyone who would rather be shown one road than offered forty. What works for elders works for everyone. It gets better every time someone says where they got lost.</p>
     </div>
     <div class="split-art reveal">
       <svg width="250" height="190" viewBox="0 0 220 160" aria-hidden="true">
@@ -388,7 +672,7 @@ footer a:hover{color:var(--purple)}
   <div class="wrap">
     <div>
       <h2>Try it, or tell us where you got lost</h2>
-      <p class="lede" style="margin-top:12px">Testing is small and invite-based for now. Ask for a place to be mapped and it goes on the list.</p>
+      <p class="lede" style="margin-top:12px">Testing is small and invite-only for now. Ask to join, or send us a place you'd like it to know better.</p>
     </div>
     <div class="cta-row">
       <a class="btn btn-primary" href="mailto:easynav.labs@gmail.com?subject=Easy%20Nav%20test%20group">Join the test group</a>
@@ -401,6 +685,7 @@ footer a:hover{color:var(--purple)}
   <div class="wrap">
     <span><strong style="color:var(--text)">Easy Nav</strong> — Your map. Your way.</span>
     <span><a href="mailto:easynav.labs@gmail.com">easynav.labs@gmail.com</a> · <a href="https://www.linkedin.com/company/easy-nav/" target="_blank" rel="noopener">LinkedIn</a> · © 2026</span>
+    <span class="credits">Map data © OpenStreetMap contributors · Street map by OpenFreeMap · Satellite imagery © Esri</span>
   </div>
 </footer>
 
@@ -415,19 +700,23 @@ footer a:hover{color:var(--purple)}
   },{threshold:.14});
   document.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
 
+  /* the phone mockups' little vehicles stand still for people who prefer less motion */
+  if(reduce) document.querySelectorAll('svg').forEach(function(s){ if(s.pauseAnimations) s.pauseAnimations(); });
+
   /* ---- card tilt ---- */
   if(!reduce && window.matchMedia('(hover:hover)').matches){
     document.querySelectorAll('.tilt').forEach(function(card){
       card.addEventListener('pointermove', function(ev){
         var r = card.getBoundingClientRect();
         var px = (ev.clientX - r.left)/r.width - .5, py = (ev.clientY - r.top)/r.height - .5;
-        card.style.transform = 'perspective(760px) rotateY('+(px*9)+'deg) rotateX('+(-py*9)+'deg) translateY(-5px)';
+        card.style.transform = 'perspective(760px) rotateY('+(px*7)+'deg) rotateX('+(-py*7)+'deg) translateY(-4px)';
       });
       card.addEventListener('pointerleave', function(){ card.style.transform=''; });
     });
   }
 
-  /* ---- 3D city + drawing route ---- */
+  /* ---- 3D city in the app's map colours: a route drawing itself, and the metro, water metro,
+         bus, truck and auto moving slowly, waiting at their stops, then moving on ---- */
   var canvas = document.getElementById('scene');
   if(typeof THREE === 'undefined' || !canvas) return;
 
@@ -437,53 +726,469 @@ footer a:hover{color:var(--purple)}
   renderer.setPixelRatio(Math.min(window.devicePixelRatio||1, 2));
 
   var scene = new THREE.Scene();
-  scene.fog = new THREE.FogExp2(0xfbf8f1, 0.0021);
-  var camera = new THREE.PerspectiveCamera(42, 1, 0.1, 300);
+  scene.fog = new THREE.FogExp2(0xfbf8f1, 0.0024);
+  var camera = new THREE.PerspectiveCamera(42, 1, 1, 400);
 
   var world = new THREE.Group();
   world.rotation.x = -0.06;
   scene.add(world);
 
-  /* ground grid */
-  var grid = new THREE.GridHelper(170, 42, 0x8f86f2, 0xd8d2f2);
-  grid.material.transparent = true;
-  grid.material.opacity = 0.5;
-  world.add(grid);
-
-  var plate = new THREE.Mesh(
-    new THREE.PlaneGeometry(185,185),
-    new THREE.MeshBasicMaterial({color:0xf3f0fb, transparent:true, opacity:.95})
-  );
-  plate.rotation.x = -Math.PI/2; plate.position.y = -0.4;
-  world.add(plate);
-
-  /* buildings; the avenues the route can use are left clear */
-  var AVX = [-5,-2,1,4,7], AVZ = [-6,-3,0,3,6];
   var boxGeo = new THREE.BoxGeometry(1,1,1);
-  var matDark = new THREE.MeshStandardMaterial({color:0x9a8ee8, roughness:.76, metalness:.05});
-  var matLit  = new THREE.MeshStandardMaterial({color:0x6c5ce7, roughness:.6, metalness:.08});
-  for(var gx=-7; gx<=7; gx++){
-    for(var gz=-7; gz<=7; gz++){
+  var mats = {};
+  function mat(hex, opts){
+    var k = hex + (opts ? JSON.stringify(opts) : '');
+    if(!mats[k]){
+      var o = {color:hex, roughness:.7, metalness:.05};
+      if(opts) for(var p in opts) o[p] = opts[p];
+      mats[k] = new THREE.MeshStandardMaterial(o);
+    }
+    return mats[k];
+  }
+  function flat(hex, opacity){
+    return new THREE.MeshBasicMaterial({color:hex, transparent:opacity!=null, opacity:opacity==null?1:opacity});
+  }
+  /* a box of size (sx,sy,sz) centred at (x,y,z) */
+  function bx(m, sx,sy,sz, x,y,z, parent){
+    var b = new THREE.Mesh(boxGeo, m);
+    b.scale.set(sx,sy,sz); b.position.set(x,y,z);
+    (parent||world).add(b); return b;
+  }
+  /* a flat strip lying on the ground */
+  function strip(hex, x1,z1,x2,z2, y){
+    var g = new THREE.Mesh(new THREE.PlaneGeometry(Math.abs(x2-x1), Math.abs(z2-z1)), flat(hex));
+    g.rotation.x = -Math.PI/2; g.position.set((x1+x2)/2, y||0.05, (z1+z2)/2);
+    world.add(g); return g;
+  }
+
+  /* --- the land, in the app's calm greys --- */
+  var S = 8;                          // one city block
+  var EDGE = 130;
+  strip(0xefede6, -EDGE,-EDGE, EDGE,EDGE, -0.3);
+
+  /* the backwater: a river along the right of the city, crossed only by the metro */
+  var RIVER_X = 55, RIVER_W = 18;
+  strip(0xd3edef, RIVER_X-RIVER_W/2,-EDGE, RIVER_X+RIVER_W/2,EDGE, 0.05);
+  strip(0xc4e4e8, RIVER_X-RIVER_W/2-0.8,-EDGE, RIVER_X-RIVER_W/2,EDGE, 0.12);
+  strip(0xc4e4e8, RIVER_X+RIVER_W/2,-EDGE, RIVER_X+RIVER_W/2+0.8,EDGE, 0.12);
+
+  /* roads. AVX run along z, AVZ along x (in blocks). One national highway (yellow), one state
+     highway (green), the rest pale grey, as the app draws them */
+  var AVX = [-14,-11,-8,-5,-2,1,4], AVZ = [-15,-12,-9,-6,-3,0,3,6,9,12,15];
+  var NH_X = 4, SH_Z = 3, METRO_Z = -3;
+  var WEST = -EDGE, BANK = RIVER_X - RIVER_W/2 - 1;
+  /* the metro runs over its avenue in the west, then bends gently to the left as it heads east */
+  var BEND_FROM = -40, BEND_K = 0.0028;
+  function metroZ(x){ var d = Math.max(0, x - BEND_FROM); return METRO_Z*S - BEND_K*d*d; }
+  /* the national highway rises over the metro line on a flyover: long, gentle ramps either side
+     (eased at both ends, as real ones are), level on top across the metro */
+  var FLY = { start:-EDGE, topFrom:-50, topTo:-10, end:60, h:16 };
+  function ease(t){ t = Math.max(0, Math.min(1, t)); return t*t*(3-2*t); }
+  function flyY(z){
+    if(z <= FLY.start || z >= FLY.end) return 0;
+    if(z < FLY.topFrom) return FLY.h * ease((z - FLY.start)/(FLY.topFrom - FLY.start));
+    if(z <= FLY.topTo) return FLY.h;
+    return FLY.h * ease((FLY.end - z)/(FLY.end - FLY.topTo));
+  }
+  AVX.forEach(function(a){
+    var x = a*S;
+    if(a === NH_X){
+      strip(0xe3e0d6, x-2.4,-EDGE, x+2.4,FLY.end, 0.1);
+      strip(0xecd592, x-3.4,FLY.end, x+3.4,EDGE, 0.1); strip(0xf9e5a3, x-2.6,FLY.end, x+2.6,EDGE, 0.2);
+    }
+    else strip(0xe3e0d6, x-2.4,-EDGE, x+2.4,EDGE, 0.1);
+  });
+  AVZ.forEach(function(a){
+    var z = a*S;
+    strip(0xe3e0d6, WEST,z-2.2, BANK,z+2.2, 0.3);
+  });
+  /* a flat road following any line of points (bends included) */
+  function ribbon(pts, width, color, y){
+    var pos = [], idx = [];
+    for(var i=0; i<pts.length; i++){
+      var a = pts[Math.max(0, i-1)], b = pts[Math.min(pts.length-1, i+1)];
+      var tx = b[0]-a[0], tz = b[1]-a[1], l = Math.hypot(tx, tz) || 1;
+      var nx = tz/l*width/2, nz = -tx/l*width/2;
+      pos.push(pts[i][0]+nx, y, pts[i][1]+nz, pts[i][0]-nx, y, pts[i][1]-nz);
+      if(i) idx.push(2*i-2, 2*i-1, 2*i, 2*i-1, 2*i+1, 2*i);
+    }
+    var geo = new THREE.BufferGeometry();
+    geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); geo.setIndex(idx);
+    var m = flat(color); m.side = THREE.DoubleSide;
+    var mesh = new THREE.Mesh(geo, m); world.add(mesh); return mesh;
+  }
+  /* a quarter turn of radius r around (cx,cz), from angle a0 to a1 (points as [x,z]) */
+  function arc(cx, cz, r, a0, a1, n){
+    var out = [];
+    for(var k=1; k<=n; k++){ var a = a0 + (a1-a0)*k/n; out.push([cx + r*Math.sin(a), cz + r*Math.cos(a)]); }
+    return out;
+  }
+  /* state highway 1: in from the west along its avenue, then a left turn, north to the far edge */
+  var SH1 = line(-EDGE, SH_Z*S, 0, SH_Z*S, 4).concat(arc(0, SH_Z*S-8, 8, 0, Math.PI/2, 12)).concat(line(8, SH_Z*S-8, 8, -EDGE, 4).slice(1));
+  /* state highway 2, in the north: in from the west, then a left turn, north to the far edge */
+  var SH2 = line(-EDGE, -9*S, -24, -9*S, 4).concat(arc(-24, -10*S, 8, 0, Math.PI/2, 12)).concat(line(-16, -10*S, -16, -EDGE, 4).slice(1));
+  [SH1, SH2].forEach(function(pts){ ribbon(pts, 6.4, 0xc5dfa8, 0.45); ribbon(pts, 4.8, 0xdeefc8, 0.55); });
+
+  /* buildings: soft white blocks, a few in the app's lavender. Avenues and the river stay clear */
+  var bWhite = mat(0xfbfaf6), bWarm = mat(0xf1eee6), bLav = mat(0xd9d3fb);
+  function addBlock(cx, cz){
+    var t = Math.random();
+    var h = t < 0.6 ? 1.4 + Math.random()*2.2 : (t < 0.9 ? 3.4 + Math.random()*2.4 : 6.5 + Math.random()*3.5);
+    var r = Math.random();
+    var m = r < 0.14 ? bLav : (r < 0.5 ? bWarm : bWhite);
+    bx(m, 3.4+Math.random()*1.8, h, 3.4+Math.random()*1.8, cx + (Math.random()-.5)*1.2, h/2, cz + (Math.random()-.5)*1.2);
+  }
+  for(var gx=-16; gx<=5; gx++){
+    for(var gz=-16; gz<=16; gz++){
       if(AVX.indexOf(gx)>=0 || AVZ.indexOf(gz)>=0) continue;
-      if(Math.random() < 0.16) continue;
-      var h = 2 + Math.random()*9;
-      var m = new THREE.Mesh(boxGeo, Math.random()<0.2 ? matLit : matDark);
-      m.position.set(gx*8 + (Math.random()-.5)*1.6, h/2, gz*8 + (Math.random()-.5)*1.6);
-      m.scale.set(3.4+Math.random()*2.2, h, 3.4+Math.random()*2.2);
-      world.add(m);
+      if(gx*S > BANK - 4) continue;
+      if(Math.abs(gz*S - metroZ(gx*S)) < 7.5) continue;
+      if(Math.random() < 0.18) continue;
+      addBlock(gx*S, gz*S);
+    }
+  }
+  /* the far bank: a few low houses and trees */
+  var leaf = mat(0xcfe5c0), trunk = mat(0xc9b9a0);
+  for(var fz=-EDGE+6; fz<EDGE; fz+=9){
+    for(var fx=RIVER_X+RIVER_W/2+5; fx<EDGE; fx+=9){
+      if(Math.random() < 0.45){
+        var hh = 1.6 + Math.random()*2.4;
+        bx(Math.random()<.5 ? bWhite : bWarm, 3.6, hh, 3.6, fx+(Math.random()-.5)*2, hh/2, fz+(Math.random()-.5)*2);
+      } else if(Math.random() < 0.6){
+        var tx = fx+(Math.random()-.5)*3, tz = fz+(Math.random()-.5)*3;
+        bx(trunk, .5, 1.6, .5, tx, .8, tz);
+        var crown = new THREE.Mesh(new THREE.SphereGeometry(1.8, 10, 8), leaf);
+        crown.position.set(tx, 2.8, tz); world.add(crown);
+      }
     }
   }
 
-  scene.add(new THREE.AmbientLight(0xffffff, 0.62));
-  var key = new THREE.DirectionalLight(0xffffff, 1.35);
-  key.position.set(-18, 34, 16); scene.add(key);
-  var rim = new THREE.PointLight(0x8f86f2, 1.4, 200);
-  rim.position.set(26, 26, -22); scene.add(rim);
+  /* --- the metro: an elevated line over one avenue, across the river --- */
+  var DECK_Y = 9;
+  /* a concrete viaduct like a real metro: a box girder with parapet walls either side, a track bed, the line's green along its side, and piers with T-shaped caps */
+  var deckM = mat(0xaaa69d, {roughness:.85}), soffitM = mat(0x96928a, {roughness:.9}), parapetM = mat(0xb6b2a9, {roughness:.8});
+  var bedM = mat(0x7b7871, {roughness:.95}), lineM = flat(0x5fb89d);
+  var pierM = mat(0xb3afa6, {roughness:.85}), capM = mat(0xa29e95, {roughness:.85});
+  var shadeM = new THREE.MeshBasicMaterial({color:0x2b2a3a, transparent:true, opacity:.07, depthWrite:false});
+  var MSTEP = 4;
+  for(var dx0=-EDGE; dx0<EDGE; dx0+=MSTEP){
+    var za = metroZ(dx0), zb = metroZ(dx0+MSTEP);
+    var seg = Math.hypot(MSTEP, zb-za)*1.02, yaw = Math.atan2(-(zb-za), MSTEP);
+    var piece = new THREE.Group();
+    piece.position.set(dx0+MSTEP/2, 0, (za+zb)/2); piece.rotation.y = yaw;
+    bx(soffitM, seg, 0.5, 4.4, 0, DECK_Y-1.55, 0, piece);         // the girder's narrower underside
+    bx(deckM,   seg, 1.1, 6.0, 0, DECK_Y-0.75, 0, piece);         // deck slab
+    bx(lineM,   seg, 0.3, 6.06, 0, DECK_Y-0.6, 0, piece);         // the line's colour, a band along both sides
+    bx(bedM,    seg, 0.12, 3.4, 0, DECK_Y-0.15, 0, piece);        // ballast bed
+    [-2.8, 2.8].forEach(function(o){ bx(parapetM, seg, 0.9, 0.4, 0, DECK_Y+0.25, o, piece); });   // parapet walls
+    var sh = new THREE.Mesh(new THREE.PlaneGeometry(seg, 5.4), shadeM);                          // its shade on the ground
+    sh.rotation.x = -Math.PI/2; sh.position.y = 0.62; piece.add(sh);
+    world.add(piece);
+  }
+  var pierGeo = new THREE.CylinderGeometry(1.15, 1.35, DECK_Y-2.2, 14);
+  for(var px=-EDGE+6; px<EDGE; px+=12){
+    var nearRoad = AVX.some(function(a){ return Math.abs(px - a*S) < 4; });
+    var inRiver = Math.abs(px - RIVER_X) < RIVER_W/2 + 3;
+    if(nearRoad || inRiver) continue;
+    var pz = metroZ(px), pyaw = Math.atan2(-(metroZ(px+1)-metroZ(px-1)), 2);
+    var pier = new THREE.Group(); pier.position.set(px, 0, pz); pier.rotation.y = pyaw;
+    var col = new THREE.Mesh(pierGeo, pierM); col.position.y = (DECK_Y-2.2)/2; pier.add(col);
+    bx(capM, 2.6, 1.0, 5.6, 0, DECK_Y-2.3, 0, pier);              // the T-shaped cap under the deck
+    world.add(pier);
+  }
+  var STATIONS = [-40, 18];       // where the train pauses (no station buildings: just the rail)
 
-  /* the route, redrawn between a new pair of points every time it finishes */
+  /* --- the flyover: deck, yellow road on top, and pillars where there's room under it --- */
+  (function(){
+    var x = NH_X*S, step = 2;
+    var deck = mat(0xe9e7e1), edgeY = flat(0xecd592), innerY = flat(0xf9e5a3);
+    for(var z = FLY.start; z < FLY.end; z += step){
+      var y1 = flyY(z), y2 = flyY(z+step);
+      if(Math.max(y1, y2) < 0.25) continue;
+      var len = Math.hypot(step, y2-y1) * 1.04, pitch = -Math.atan2(y2-y1, step);
+      var my = (y1+y2)/2, mzz = z + step/2;
+      [[deck, 7.4, 1.2, -0.6], [edgeY, 6.8, 0.1, 0.06], [innerY, 5.2, 0.1, 0.2]].forEach(function(l){
+        var b = new THREE.Mesh(boxGeo, l[0]);
+        b.scale.set(l[1], l[2], len); b.position.set(x, my + l[3], mzz); b.rotation.x = pitch;
+        world.add(b);
+      });
+    }
+    var pm = mat(0xdedbd2);
+    for(var pz = FLY.start + 10; pz < FLY.end; pz += 10){
+      var h = flyY(pz) - 1.2;
+      var nearRoad = AVZ.some(function(a){ return Math.abs(pz - a*S) < 5; });
+      if(h < 2 || nearRoad || Math.abs(pz - metroZ(x)) < 6) continue;
+      var pil = new THREE.Mesh(new THREE.CylinderGeometry(1.1, 1.3, h, 10), pm);
+      pil.position.set(x, h/2, pz); world.add(pil);
+    }
+  })();
+
+  /* --- jetties for the water metro, on the city bank --- */
+  var JETTIES = [-30, 30];
+  var jettyM = mat(0xe6dccb);
+  JETTIES.forEach(function(jz){
+    bx(jettyM, 6, 0.6, 5, RIVER_X-RIVER_W/2+2.2, 0.5, jz);
+    bx(flat(0x7cb3dd), 0.9, 0.5, 5.2, RIVER_X-RIVER_W/2+5.6, 0.62, jz);
+  });
+
+  scene.add(new THREE.AmbientLight(0xffffff, 0.9));
+  var key = new THREE.DirectionalLight(0xffffff, 0.85);
+  key.position.set(-18, 34, 16); scene.add(key);
+  var rim = new THREE.PointLight(0xc9c2f7, 0.6, 220);
+  rim.position.set(26, 30, -22); scene.add(rim);
+
+  /* fades a model in and out by opacity: it gets its own copies of its materials */
+  function fader(group){
+    var ms = [];
+    group.traverse(function(o){
+      if(!o.isMesh) return;
+      o.material = o.material.clone();
+      o.material.userData = { o: o.material.opacity, t: o.material.transparent };
+      ms.push(o.material);
+    });
+    return function(a){
+      ms.forEach(function(m){ m.transparent = a < 0.999 || m.userData.t; m.opacity = a * m.userData.o; });
+      group.visible = a > 0.003;
+    };
+  }
+
+  /* ---- shapes for the models: rounded boxes, side profiles, wheels with hubs ---- */
+  var DARK  = mat(0x2c2f3a, {roughness:.3});
+  var GLASS = mat(0x34425a, {roughness:.12, metalness:.5});
+  var tyreM = mat(0x23232b, {roughness:.9});
+  var hubM  = mat(0xc9ccd3, {roughness:.35, metalness:.4});
+  var WHITE = mat(0xf7f7f4, {roughness:.5}), GREY = mat(0x8d9099, {roughness:.6});
+  var LAMP = flat(0xfff3c4), TAIL = flat(0xe0483e), AMBER = flat(0xffc34d);
+  var gcache = {};
+  function rrect(w, h, r){
+    var sh = new THREE.Shape(), x = -w/2, y = -h/2;
+    r = Math.max(0, Math.min(r, w/2, h/2));
+    sh.moveTo(x+r, y); sh.lineTo(x+w-r, y); sh.quadraticCurveTo(x+w, y, x+w, y+r);
+    sh.lineTo(x+w, y+h-r); sh.quadraticCurveTo(x+w, y+h, x+w-r, y+h);
+    sh.lineTo(x+r, y+h); sh.quadraticCurveTo(x, y+h, x, y+h-r);
+    sh.lineTo(x, y+r); sh.quadraticCurveTo(x, y, x+r, y);
+    return sh;
+  }
+  /* a box w long, h tall, d wide: rounded at the corners seen from the side, edges softened */
+  function rbox(w, h, d, r){
+    var k = [w,h,d,r].join();
+    if(!gcache[k]){
+      var b = Math.min(0.12, d/4, w/4, h/4);
+      var geo = new THREE.ExtrudeGeometry(rrect(w-2*b, h-2*b, r-b), {depth:Math.max(0.01, d-2*b), bevelEnabled:true, bevelSize:b, bevelThickness:b, bevelSegments:1, curveSegments:5});
+      geo.center(); gcache[k] = geo;
+    }
+    return gcache[k];
+  }
+  /* a side profile (points x,y), d wide */
+  function prof(points, d){
+    var sh = new THREE.Shape(); sh.moveTo(points[0][0], points[0][1]);
+    for(var i=1; i<points.length; i++) sh.lineTo(points[i][0], points[i][1]);
+    var geo = new THREE.ExtrudeGeometry(sh, {depth:d, bevelEnabled:true, bevelSize:.08, bevelThickness:.08, bevelSegments:1});
+    geo.translate(0, 0, -d/2); return geo;
+  }
+  function put(geo, m, x, y, z, parent, rz){
+    var o = new THREE.Mesh(geo, m); o.position.set(x, y, z); if(rz) o.rotation.z = rz; parent.add(o); return o;
+  }
+  function rb(parent, m, w, h, d, r, x, y, z, rz){ return put(rbox(w,h,d,r), m, x, y, z, parent, rz); }
+  var ball = {};
+  function sphere(r){ return ball[r] || (ball[r] = new THREE.SphereGeometry(r, 12, 10)); }
+  var wheelGeo = {};
+  function wheel(parent, x, z, r, w){
+    var k = r+'_'+w;
+    if(!wheelGeo[k]) wheelGeo[k] = [new THREE.CylinderGeometry(r, r, w, 18), new THREE.CylinderGeometry(r*.5, r*.5, w+.06, 12)];
+    [[wheelGeo[k][0], tyreM], [wheelGeo[k][1], hubM]].forEach(function(pr){
+      var o = new THREE.Mesh(pr[0], pr[1]); o.rotation.x = Math.PI/2; o.position.set(x, r, z); parent.add(o);
+    });
+  }
+  function axle(parent, xs, half, r, w){ xs.forEach(function(x){ wheel(parent, x, half, r, w); wheel(parent, x, -half, r, w); }); }
+
+  /* ---- the vehicles, front towards +x, in the app's colours ---- */
+  function makeTrain(){
+    var g = new THREE.Group();
+    var teal = mat(0x5fd6c9, {roughness:.4}), tealDk = mat(0x2c9c90), roof = mat(0xe9f6f4, {roughness:.5}), door = mat(0x9be6de, {roughness:.4});
+    for(var i=0; i<3; i++){
+      var car = new THREE.Group();
+      rb(car, DARK, 10, .5, 3.4, .2, 0, .45, 0);                       // under-frame
+      rb(car, teal, 11, 3.9, 4.2, 1.0, 0, 2.6, 0);                     // body
+      rb(car, tealDk, 11.04, .45, 4.24, .2, 0, 1.05, 0);               // skirt line
+      rb(car, GLASS, 9.2, 1.25, 4.26, .35, 0, 3.2, 0);                 // windows
+      [-2.8, 2.8].forEach(function(dx){ rb(car, door, 1.1, 2.7, 4.3, .2, dx, 2.4, 0); rb(car, GLASS, .7, 1.1, 4.32, .2, dx, 3.05, 0); });
+      rb(car, roof, 10.2, .4, 3.4, .2, 0, 4.65, 0);                    // roof
+      if(i !== 1){
+        var e = i === 0 ? 1 : -1;
+        rb(car, GLASS, .4, 1.5, 3.4, .5, e*5.35, 3.3, 0);              // driver's windscreen
+        put(sphere(.28), LAMP, e*5.5, 1.6, 1.3, car); put(sphere(.28), LAMP, e*5.5, 1.6, -1.3, car);
+      }
+      if(i < 2) rb(car, DARK, 1.0, 3.0, 3.0, .3, -5.9, 2.5, 0);        // gangway to the next car
+      car.userData.off = (1-i)*11.8;
+      g.add(car);
+    }
+    return g;
+  }
+  function makeBus(){
+    var g = new THREE.Group();
+    var body = mat(0xe8716b, {roughness:.45}), dk = mat(0xa83f3b);
+    rb(g, body, 14, 4.3, 4.6, .8, 0, 3.25, 0);
+    rb(g, dk, 14.04, .9, 4.64, .3, 0, 1.5, 0);                         // lower skirt
+    rb(g, WHITE, 14.06, .32, 4.66, .1, 0, 2.2, 0);                     // white band
+    rb(g, GLASS, 11.2, 1.55, 4.68, .35, -.8, 3.95, 0);                 // side windows
+    rb(g, GLASS, .4, 2.3, 4.0, .4, 6.86, 3.75, 0);                     // windscreen
+    rb(g, AMBER, .3, .55, 2.8, .1, 6.95, 5.05, 0);                     // route board
+    rb(g, GLASS, 1.5, 2.8, .2, .2, 4.4, 3.0, -2.32);                   // door, on the left
+    rb(g, WHITE, 4.2, .6, 2.8, .3, -1.6, 5.65, 0);                     // roof AC unit
+    [1.75,-1.75].forEach(function(z){ rb(g, LAMP, .2, .45, .8, .15, 7.02, 1.9, z); rb(g, TAIL, .2, .55, .6, .15, -7.02, 2.3, z); });
+    [2.55,-2.55].forEach(function(z){ rb(g, DARK, .25, 1.1, .2, .1, 7.0, 4.4, z); });   // mirrors
+    axle(g, [4.4,-4.4], 2.2, 1.2, .9);
+    return g;
+  }
+  function makeBoat(){
+    var g = new THREE.Group();
+    var outline = [[-6,-2.5],[3,-2.5],[5.4,-1.3],[6.6,0],[5.4,1.3],[3,2.5],[-6,2.5]];
+    function layer(sc, h, m, y){
+      var sh = new THREE.Shape(); sh.moveTo(outline[0][0]*sc, outline[0][1]*sc);
+      outline.slice(1).forEach(function(p){ sh.lineTo(p[0]*sc, p[1]*sc); });
+      var geo = new THREE.ExtrudeGeometry(sh, {depth:h, bevelEnabled:true, bevelSize:.12, bevelThickness:.12, bevelSegments:2});
+      geo.rotateX(-Math.PI/2);
+      var o = new THREE.Mesh(geo, m); o.position.y = y; g.add(o);
+    }
+    layer(1, 1.4, WHITE, .2);                                          // hull, pointed at the bow
+    layer(1.02, .35, mat(0x2c9c90), .75);                              // band round the hull
+    layer(.95, .1, mat(0xe2e4e6), 1.75);                               // deck
+    rb(g, WHITE, 8, 2.0, 4.0, .6, -1, 2.9, 0);                         // cabin
+    rb(g, GLASS, 7.4, 1.0, 4.06, .3, -1, 3.05, 0);                     // windows all round
+    rb(g, GLASS, .3, 1.1, 3.4, .25, 3.0, 3.05, 0, -0.35);              // raked wheelhouse glass
+    rb(g, mat(0x5fd6c9, {roughness:.4}), 8.8, .35, 4.6, .2, -1, 4.05, 0);   // roof
+    return g;
+  }
+
+  /* a path along a road, as points [x,z]: distance along it gives position and direction */
+  function Path(points){
+    this.p = points; this.cum = [0];
+    for(var i=1; i<points.length; i++) this.cum.push(this.cum[i-1] + Math.hypot(points[i][0]-points[i-1][0], points[i][1]-points[i-1][1]));
+    this.L = this.cum[this.cum.length-1];
+  }
+  Path.prototype.at = function(d){
+    var c = this.cum, p = this.p, n = c.length, lo = 0, hi = n-1;
+    if(d <= 0) hi = 1; else if(d >= this.L) lo = n-2;
+    else while(hi - lo > 1){ var m = (lo+hi) >> 1; if(c[m] <= d) lo = m; else hi = m; }
+    var seg = (c[hi]-c[lo]) || 1, f = (d - c[lo])/seg;              // (beyond either end it carries straight on)
+    return { x: p[lo][0] + (p[hi][0]-p[lo][0])*f, z: p[lo][1] + (p[hi][1]-p[lo][1])*f,
+             tx: (p[hi][0]-p[lo][0])/seg, tz: (p[hi][1]-p[lo][1])/seg };
+  };
+  Path.prototype.near = function(x, z){
+    var best = 0, bd = 1e9;
+    for(var i=0; i<this.p.length; i++){ var dd = Math.hypot(this.p[i][0]-x, this.p[i][1]-z); if(dd < bd){ bd = dd; best = this.cum[i]; } }
+    return best;
+  };
+  function line(x1, z1, x2, z2, step){
+    var n = Math.max(1, Math.ceil(Math.hypot(x2-x1, z2-z1)/(step||4))), out = [];
+    for(var i=0; i<=n; i++) out.push([x1+(x2-x1)*i/n, z1+(z2-z1)*i/n]);
+    return out;
+  }
+
+  /* A vehicle on one trip along its road: it fades in where the road begins, moves to each stop,
+     eases in, waits (as if for people to board), moves on, and carries on to the end of the road,
+     fading away there. Unhurried on purpose. */
+  var FADE_S = 1.6;
+  function easeIn(u){ return (u < 0.25 ? u*u/0.5 : u - 0.125) / 0.875; }   // from standstill to a steady pace
+  function Mover(o){
+    var path = this.path = o.path;
+    this.g = o.model; this.y = o.y || 0; this.lane = o.lane || 0; this.speed = o.speed; this.wait = o.wait;
+    this.bob = o.bob || 0; this.yAt = o.yAt || null; this.cars = !!o.cars;
+    this.g.rotation.order = 'YZX';
+    var trim = o.trim || [0, 0];
+    this.pts = [trim[0]].concat(o.stops.map(function(q){ return path.near(q[0], q[1]); })).concat([path.L - trim[1]]);
+    this.dirs = o.dirs || [1, -1];
+    this.clear = !!o.clear;                      // never meets anything (up on its line, or on the water)
+    this.fade = fader(this.g); this.fade(0);
+    this.vis = 0; this.show = false; this.done = true;
+    this.i = 0; this.dir = 1; this.c = this.pts[0];
+    world.add(this.g);
+  }
+  Mover.prototype.pickWait = function(){ return this.wait[0] + Math.random()*(this.wait[1]-this.wait[0]); };
+  Mover.prototype.enter = function(){
+    this.dir = this.dirs[(Math.random()*this.dirs.length)|0];
+    this.i = this.dir > 0 ? 0 : this.pts.length-1;
+    this.vis = 0; this.show = true; this.done = false;
+    this.startLeg();
+  };
+  Mover.prototype.isEnd = function(i){ return i === 0 || i === this.pts.length-1; };
+  Mover.prototype.startLeg = function(){
+    this.next = this.i + this.dir; this.state = 'move';
+    this.dur = Math.abs(this.pts[this.next]-this.pts[this.i]) / this.speed;
+    this.timer = this.dur;
+  };
+  /* sets one model on the path at distance d, keeping to the left of the way it's going */
+  Mover.prototype.pose = function(obj, d, laneOff){
+    var p = this.path.at(d), dir = this.dir, tx = p.tx*dir, tz = p.tz*dir;
+    var x = p.x + tz*laneOff, z = p.z - tx*laneOff, y = this.y;
+    if(this.yAt){
+      y += this.yAt(x, z);
+      var q = this.path.at(d + dir), r = this.path.at(d - dir);
+      obj.rotation.z = Math.atan((this.yAt(q.x, q.z) - this.yAt(r.x, r.z))/2);
+    }
+    obj.position.set(x, y, z);
+    obj.rotation.y = Math.atan2(-tz, tx);
+  };
+  Mover.prototype.place = function(c, s){
+    var me = this;
+    if(this.cars){
+      this.g.children.forEach(function(car){ me.pose(car, c + car.userData.off*me.dir, 0); });
+      return;
+    }
+    this.pose(this.g, c, this.lane);
+    if(this.bob){ this.g.position.y += Math.sin(s*1.3)*this.bob; this.g.rotation.x = Math.sin(s*0.9)*0.03; }
+  };
+  Mover.prototype.update = function(dt, s){
+    if(this.done) return;
+    this.vis = Math.max(0, Math.min(1, this.vis + (this.show ? dt : -dt)/FADE_S));
+    this.fade(this.vis*this.vis*(3-2*this.vis));
+    this.timer -= dt;
+    if(this.state === 'wait' && this.timer <= 0) this.startLeg();
+    else if(this.state === 'move' && this.timer <= 0){
+      var from = this.pts[this.i];
+      this.i = this.next;
+      if(this.isEnd(this.i)){
+        /* the end of the road: keep going at the same pace, and fade away */
+        this.state = 'exit'; this.show = false;
+        this.v = (this.pts[this.i] - from) / (this.dur * (this.pts.length === 2 ? 1 : 0.875));
+        this.c = this.pts[this.i];
+      } else { this.state = 'wait'; this.timer = this.pickWait(); }
+    }
+    var c;
+    if(this.state === 'move'){
+      var u = 1 - Math.max(0, this.timer)/this.dur, f;
+      if(this.pts.length === 2) f = u;                         // no stops: one steady run
+      else if(this.isEnd(this.i)) f = 1 - easeIn(1 - u);            // already moving as it appears, easing into the stop
+      else if(this.isEnd(this.next)) f = easeIn(u);             // away from the last stop, not stopping again
+      else f = u*u*(3-2*u);
+      c = this.pts[this.i] + (this.pts[this.next]-this.pts[this.i])*f;
+    } else if(this.state === 'exit'){
+      c = this.c = this.c + this.v*dt;
+      if(this.vis <= 0){ this.done = true; this.fade(0); return; }
+    } else c = this.pts[this.i];
+    this.place(c, s);
+  };
+
+  /* the roads they travel, end to end */
+  var metroPath = new Path((function(){ var a = []; for(var x=-EDGE; x<=EDGE; x+=2) a.push([x, metroZ(x)]); return a; })());
+  var BOAT_X = RIVER_X + 1.5;
+
+  /* Public transport, running without stops so there's always something on the move. Two are out at
+     a time, alongside the traveller; a bus sets off only where it won't meet the route or the other one.
+     The metro is up on its line and the boat on the river, so they never meet anything. */
+  var movers = [
+    new Mover({model:makeTrain(), path:metroPath, cars:true, y:DECK_Y, trim:[26,26], stops:[], speed:7, clear:true}),
+    new Mover({model:makeBus(), path:new Path(SH1), trim:[8,8], stops:[], lane:1.4, speed:6}),
+    new Mover({model:makeBoat(), path:new Path(line(BOAT_X,-EDGE, BOAT_X,EDGE, 8)), trim:[8,8], stops:[], speed:5, bob:0.18, clear:true}),
+    new Mover({model:makeBus(), path:new Path(SH2), trim:[8,8], stops:[], lane:1.4, speed:6})
+  ];
+  var turn = -1, nextOutAt = 0;
+  function outNow(){ return movers.filter(function(m){ return !m.done; }); }
+
+  /* ---- the route, redrawn between a new pair of corners each time it finishes ---- */
   var tubeMat = new THREE.ShaderMaterial({
     transparent:true,
-    uniforms:{ uProgress:{value:0}, uA:{value:new THREE.Color(0x0a8a8f)}, uB:{value:new THREE.Color(0x7ccf3a)} },
+    uniforms:{ uProgress:{value:0}, uA:{value:new THREE.Color(0x6c5ce7)}, uB:{value:new THREE.Color(0x8f7cf0)} },
     vertexShader:'varying vec2 vUv; void main(){ vUv=uv; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0); }',
     fragmentShader:[
       'varying vec2 vUv; uniform float uProgress; uniform vec3 uA; uniform vec3 uB;',
@@ -491,157 +1196,195 @@ footer a:hover{color:var(--purple)}
       '  if(vUv.x > uProgress) discard;',
       '  vec3 col = mix(uA, uB, vUv.x);',
       '  float head = smoothstep(uProgress-0.05, uProgress, vUv.x);',
-      '  col += head * 0.22;',
+      '  col += head * 0.18;',
       '  float edge = smoothstep(0.0,0.42,abs(vUv.y-0.5)*2.0);',
-      '  gl_FragColor = vec4(col, 0.80 + 0.20*(1.0-edge));',
+      '  gl_FragColor = vec4(col, 0.82 + 0.18*(1.0-edge));',
       '}'
     ].join('\n')
   });
+  tubeMat.side = THREE.DoubleSide; tubeMat.depthWrite = false;
   var tube = new THREE.Mesh(new THREE.BufferGeometry(), tubeMat);
   world.add(tube);
+  var ROUTE_Y = 0.7, ROUTE_W = 3.6;
+  /* a flat band along the curve: u runs along it (for drawing it in), v across */
+  function bandGeometry(c, n, w){
+    var pos = [], uv = [], idx = [], pts = c.getSpacedPoints(n);
+    for(var i=0; i<=n; i++){
+      var a = pts[Math.max(0, i-1)], b = pts[Math.min(n, i+1)];
+      var tx = b.x-a.x, tz = b.z-a.z, l = Math.hypot(tx, tz) || 1, nx = tz/l*w/2, nz = -tx/l*w/2;
+      pos.push(pts[i].x+nx, ROUTE_Y, pts[i].z+nz, pts[i].x-nx, ROUTE_Y, pts[i].z-nz);
+      uv.push(i/n, 0, i/n, 1);
+      if(i) idx.push(2*i-2, 2*i-1, 2*i, 2*i-1, 2*i+1, 2*i);
+    }
+    var geo = new THREE.BufferGeometry();
+    geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+    geo.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2));
+    geo.setIndex(idx); return geo;
+  }
+  /* the start: a white dot in a purple ring, lying on the road */
+  var startDot = new THREE.Group();
+  var ringM = flat(0x6c5ce7, 1), dotM = flat(0xffffff, 1);
+  var sdRing = new THREE.Mesh(new THREE.CircleGeometry(3.1, 28), ringM); sdRing.rotation.x = -Math.PI/2; sdRing.position.y = 0.8;
+  var sdDot = new THREE.Mesh(new THREE.CircleGeometry(1.7, 28), dotM); sdDot.rotation.x = -Math.PI/2; sdDot.position.y = 0.85;
+  startDot.add(sdRing, sdDot); world.add(startDot);
 
-  var pin = new THREE.Mesh(new THREE.ConeGeometry(2.6, 7.4, 20), new THREE.MeshBasicMaterial({color:0x4a8f14}));
+  var pin = new THREE.Mesh(new THREE.ConeGeometry(2.4, 7, 20), flat(0x4a8f14, 1));
   pin.rotation.x = Math.PI;
   world.add(pin);
 
-  var shadow = new THREE.Mesh(
-    new THREE.CircleGeometry(6, 28),
-    new THREE.MeshBasicMaterial({color:0x5b5497, transparent:true, opacity:.2})
-  );
+  var shadow = new THREE.Mesh(new THREE.CircleGeometry(5.5, 28), flat(0x5b5497, .18));
   shadow.rotation.x = -Math.PI/2; shadow.position.y = 0.3;
   world.add(shadow);
 
-  /* three travellers: car, bike, on foot - one per run */
-  var paint  = new THREE.MeshStandardMaterial({color:0x4b3fa8, roughness:.38, metalness:.2});
-  var roofM  = new THREE.MeshStandardMaterial({color:0x7ccf3a, roughness:.5, metalness:.1});
-  var glassM = new THREE.MeshStandardMaterial({color:0xcfe8ff, roughness:.15, metalness:.3});
-  var tyreM  = new THREE.MeshStandardMaterial({color:0x22203a, roughness:.9});
-  var lampM  = new THREE.MeshBasicMaterial({color:0xfff3b0});
-  var skinM  = new THREE.MeshStandardMaterial({color:0xe8b48a, roughness:.7});
-  var wheelGeo = new THREE.CylinderGeometry(1.6, 1.6, 1.3, 16);
+  /* three travellers: car, bike, on foot (one per run, as the app routes by car, bike or walking) */
+  var paint  = mat(0x4b3fa8, {roughness:.38, metalness:.2});
+  var accent = mat(0x7ccf3a, {roughness:.5});
+  var skinM  = mat(0xe8b48a);
 
-  /* car */
+  /* car: rounded body, glass cabin, lime roof, lights, bumpers, mirrors */
   var car = new THREE.Group();
-  var body = new THREE.Mesh(boxGeo, paint);
-  body.scale.set(12.5, 3.0, 5.8); body.position.y = 2.6;
-  var hood = new THREE.Mesh(boxGeo, paint);
-  hood.scale.set(4.2, 1.6, 5.4); hood.position.set(4.3, 4.6, 0);
-  var cabin = new THREE.Mesh(boxGeo, roofM);
-  cabin.scale.set(5.6, 3.1, 5.2); cabin.position.set(-1.6, 5.4, 0);
-  var glass = new THREE.Mesh(boxGeo, glassM);
-  glass.scale.set(0.7, 2.2, 4.8); glass.position.set(1.3, 5.3, 0);
-  car.add(body, hood, cabin, glass);
-  [[4.0,3.0],[4.0,-3.0],[-4.0,3.0],[-4.0,-3.0]].forEach(function(w){
-    var wh = new THREE.Mesh(wheelGeo, tyreM);
-    wh.rotation.x = Math.PI/2; wh.position.set(w[0], 1.6, w[1]); car.add(wh);
+  rb(car, paint, 10.4, 2.1, 4.8, .9, 0, 1.95, 0);
+  put(prof([[-3.7,0],[2.0,0],[0.6,1.9],[-2.9,1.9]], 4.3), GLASS, 0, 2.9, 0, car);
+  rb(car, accent, 3.6, .35, 4.45, .2, -1.15, 4.92, 0);
+  rb(car, DARK, .5, .65, 4.9, .25, 5.15, 1.25, 0); rb(car, DARK, .5, .65, 4.9, .25, -5.15, 1.25, 0);
+  [1.6,-1.6].forEach(function(z){
+    rb(car, LAMP, .25, .5, 1.1, .15, 5.15, 2.25, z); rb(car, TAIL, .25, .5, 1.0, .15, -5.15, 2.3, z);
+    rb(car, paint, .6, .35, .4, .1, 1.7, 3.35, z*1.6);
   });
-  [[6.4,1.9],[6.4,-1.9]].forEach(function(l){
-    var lamp = new THREE.Mesh(boxGeo, lampM);
-    lamp.scale.set(0.5, 1.0, 1.4); lamp.position.set(l[0], 2.9, l[1]); car.add(lamp);
-  });
+  axle(car, [3.3,-3.3], 2.3, 1.15, .8);
   world.add(car);
 
-  /* bike */
+  /* motorbike and rider */
   var bike = new THREE.Group();
-  var bWheel = new THREE.CylinderGeometry(2.0, 2.0, 0.9, 18);
-  [3.2, -3.2].forEach(function(x){
-    var wh = new THREE.Mesh(bWheel, tyreM);
-    wh.rotation.x = Math.PI/2; wh.position.set(x, 2.0, 0); bike.add(wh);
-  });
-  var bFrame = new THREE.Mesh(boxGeo, paint);
-  bFrame.scale.set(7.0, 1.5, 2.2); bFrame.position.y = 3.0;
-  var tank = new THREE.Mesh(boxGeo, roofM);
-  tank.scale.set(3.0, 1.6, 2.0); tank.position.set(0.4, 4.3, 0);
-  var bars = new THREE.Mesh(boxGeo, tyreM);
-  bars.scale.set(0.6, 0.6, 4.2); bars.position.set(3.0, 5.0, 0);
-  var rider = new THREE.Mesh(boxGeo, paint);
-  rider.scale.set(2.2, 3.4, 2.6); rider.position.set(-1.2, 6.2, 0);
-  var helmet = new THREE.Mesh(new THREE.SphereGeometry(1.4, 16, 16), roofM);
-  helmet.position.set(-0.8, 8.4, 0);
-  var bLamp = new THREE.Mesh(boxGeo, lampM);
-  bLamp.scale.set(0.5, 1.2, 1.2); bLamp.position.set(4.4, 4.2, 0);
-  bike.add(bFrame, tank, bars, rider, helmet, bLamp);
-  bike.visible = false;
+  wheel(bike, 2.5, 0, 1.4, .5); wheel(bike, -2.5, 0, 1.4, .5);
+  rb(bike, GREY, 2.2, 1.2, 1.1, .3, 0, 2.2, 0);                  // engine
+  rb(bike, accent, 2.6, 1.2, 1.5, .55, .7, 3.3, 0);              // tank
+  rb(bike, DARK, 2.6, .5, 1.3, .25, -1.4, 3.3, 0);               // seat
+  rb(bike, accent, 2.0, .6, 1.2, .3, -2.6, 2.9, 0, .15);         // tail
+  rb(bike, GREY, .3, 3.0, .3, .1, 2.3, 2.8, 0, -.35);            // front fork
+  rb(bike, DARK, .3, .3, 2.8, .1, 1.9, 4.3, 0);                  // handlebar
+  put(sphere(.35), LAMP, 2.75, 3.8, 0, bike);
+  [.7,-.7].forEach(function(z){ rb(bike, DARK, 2.3, .8, .7, .35, -.4, 3.9, z, -.1); });   // legs
+  rb(bike, paint, 1.5, 2.6, 2.0, .65, -1.0, 5.4, 0, -.25);       // rider, leaning forward
+  [1.05,-1.05].forEach(function(z){ rb(bike, paint, 3.0, .55, .55, .25, .6, 5.3, z, -.67); });   // arms to the bars
+  put(sphere(1.0), accent, -.5, 7.25, 0, bike);                  // helmet
+  rb(bike, DARK, .3, .5, 1.3, .15, .45, 7.2, 0);                 // visor
   world.add(bike);
 
-  /* on foot */
+  /* someone on foot, with a small backpack */
   var walker = new THREE.Group();
-  var torso = new THREE.Mesh(boxGeo, paint);
-  torso.scale.set(2.2, 4.0, 3.0); torso.position.y = 6.2;
-  var head = new THREE.Mesh(new THREE.SphereGeometry(1.4, 16, 16), skinM);
-  head.position.y = 9.1;
-  var cap = new THREE.Mesh(boxGeo, roofM);
-  cap.scale.set(2.6, 0.7, 2.9); cap.position.y = 10.1;
-  walker.add(torso, head, cap);
-  var legs = [];
-  [1.0, -1.0].forEach(function(z){
-    var hip = new THREE.Group();
-    hip.position.set(0, 4.2, z);
-    var leg = new THREE.Mesh(boxGeo, tyreM);
-    leg.scale.set(1.1, 4.2, 1.1); leg.position.y = -2.1;
-    hip.add(leg); walker.add(hip); legs.push(hip);
+  rb(walker, paint, 1.7, 3.1, 2.5, .7, 0, 5.6, 0);
+  rb(walker, accent, 1.2, 2.0, 1.8, .4, -1.3, 5.9, 0);
+  put(sphere(1.05), skinM, 0, 8.05, 0, walker);
+  put(new THREE.SphereGeometry(1.1, 16, 8, 0, Math.PI*2, 0, Math.PI/2), DARK, -.1, 8.2, 0, walker);   // hair
+  var legs = [], arms = [];
+  var legGeo = new THREE.CylinderGeometry(.45, .4, 3.8, 10), armGeo = new THREE.CylinderGeometry(.33, .3, 3.0, 10), trouser = mat(0x3a3f55);
+  [.62,-.62].forEach(function(z){
+    var h = new THREE.Group(); h.position.set(0, 4.1, z);
+    put(legGeo, trouser, 0, -1.9, 0, h); rb(h, DARK, 1.1, .4, .7, .2, .25, -3.9, 0);
+    walker.add(h); legs.push(h);
   });
-  var arms = [];
-  [1.7, -1.7].forEach(function(z){
-    var sh = new THREE.Group();
-    sh.position.set(0, 7.6, z);
-    var arm = new THREE.Mesh(boxGeo, paint);
-    arm.scale.set(0.9, 3.4, 0.9); arm.position.y = -1.7;
-    sh.add(arm); walker.add(sh); arms.push(sh);
+  [1.5,-1.5].forEach(function(z){
+    var h = new THREE.Group(); h.position.set(0, 6.8, z);
+    put(armGeo, paint, 0, -1.5, 0, h); put(sphere(.34), skinM, 0, -3.05, 0, h);
+    walker.add(h); arms.push(h);
   });
-  walker.visible = false;
   world.add(walker);
 
   var travellers = [car, bike, walker];
-  var active = car, mode = 0;   // 0 car, 1 bike, 2 on foot
+  var travellerFade = travellers.map(fader);
+  var active = car, mode = -1;
 
-  /* pick a fresh origin and destination on the grid, joined along the avenues */
+  /* the route's corners: avenue crossings, never along the metro's avenue (its pillars are there) */
+  /* (which avenues a route may use is set per lap, by the vehicle that's out: see movers) */
   var curve = null;
   function anyOf(a){ return a[(Math.random()*a.length)|0]; }
-  function between(a, p, q){
-    var lo = Math.min(p,q), hi = Math.max(p,q);
-    return a.filter(function(v){ return v > lo && v < hi; });
-  }
-  function newRoute(onFoot){
-    var gap = onFoot ? 3 : 6;
-    var xi = anyOf(AVX), xj;
-    do { xj = anyOf(AVX); } while(Math.abs(xj - xi) !== gap && (onFoot || Math.abs(xj - xi) < gap));
-    var zi = anyOf(AVZ), zj;
-    do { zj = anyOf(AVZ); } while(Math.abs(zj - zi) !== gap && (onFoot || Math.abs(zj - zi) < gap));
-    var pts = [new THREE.Vector3(xi*8, 1.1, zi*8)];
-    var midX = between(AVX, xi, xj), midZ = between(AVZ, zi, zj);
-    if(!onFoot && midX.length && midZ.length && Math.random() < 0.75){
-      var xm = anyOf(midX)*8, zm = anyOf(midZ)*8;
-      pts.push(new THREE.Vector3(xi*8, 1.1, zm));
-      pts.push(new THREE.Vector3(xm,   1.1, zm));
-      pts.push(new THREE.Vector3(xm,   1.1, zj*8));
+  function inside(a, p, q){ var lo=Math.min(p,q), hi=Math.max(p,q); return a.filter(function(v){ return v>lo && v<hi; }); }
+  function newRoute(onFoot, RX, RZ){   // corners of a route between avenue crossings
+    var xi, xj, zi, zj, tries = 0;
+    do {
+      xi = anyOf(RX); xj = anyOf(RX); zi = anyOf(RZ); zj = anyOf(RZ); tries++;
+      var dx = Math.abs(xj-xi), dz = Math.abs(zj-zi);
+      var ok = onFoot ? (dx===3 && dz>=3 && dz<=6) : (dx>=3 && dz>=6) || (dx>=6 && dz>=3);
+    } while(!ok && tries < 200);
+    var pts = [new THREE.Vector3(xi*S, ROUTE_Y, zi*S)];
+    var midX = inside(RX, xi, xj), midZ = inside(RZ, zi, zj);
+    if(!onFoot && midX.length && midZ.length && Math.random() < 0.7){
+      var xm = anyOf(midX)*S, zm = anyOf(midZ)*S;
+      pts.push(new THREE.Vector3(xi*S, ROUTE_Y, zm), new THREE.Vector3(xm, ROUTE_Y, zm), new THREE.Vector3(xm, ROUTE_Y, zj*S));
     } else if(Math.random() < 0.5){
-      pts.push(new THREE.Vector3(xi*8, 1.1, zj*8));
+      pts.push(new THREE.Vector3(xi*S, ROUTE_Y, zj*S));
     } else {
-      pts.push(new THREE.Vector3(xj*8, 1.1, zi*8));
+      pts.push(new THREE.Vector3(xj*S, ROUTE_Y, zi*S));
     }
-    pts.push(new THREE.Vector3(xj*8, 1.1, zj*8));
+    pts.push(new THREE.Vector3(xj*S, ROUTE_Y, zj*S));
+    return pts;
+  }
+  function useRoute(pts){
     curve = new THREE.CatmullRomCurve3(pts, false, 'catmullrom', 0.03);
     if(tube.geometry) tube.geometry.dispose();
-    tube.geometry = new THREE.TubeGeometry(curve, 300, 3.4, 16, false);
+    tube.geometry = bandGeometry(curve, 300, ROUTE_W);
+    startDot.position.set(pts[0].x, 0, pts[0].z);
     var e = curve.getPointAt(1);
-    pin.position.set(e.x, 6.4, e.z);
+    pin.position.set(e.x, 6, e.z);
   }
-  newRoute(false);
 
-  function placeTraveller(at, time){
+  function placeTraveller(at, s){
     var pt = curve.getPointAt(at);
-    active.position.set(pt.x, pt.y - 0.6, pt.z);
-    shadow.position.set(pt.x, 0.3, pt.z);
+    active.position.set(pt.x, ROUTE_Y + 0.05, pt.z);
+    shadow.position.set(pt.x, ROUTE_Y + 0.12, pt.z);
     var tan = curve.getTangentAt(at);
     active.rotation.y = Math.atan2(-tan.z, tan.x);
     if(active === walker){
-      var sw = Math.sin(time * 34);
-      legs[0].rotation.z = sw * 0.55; legs[1].rotation.z = -sw * 0.55;
-      arms[0].rotation.z = -sw * 0.4; arms[1].rotation.z = sw * 0.4;
-      walker.position.y += Math.abs(Math.cos(time * 34)) * 0.4;
+      var sw = Math.sin(s * 6.5);
+      legs[0].rotation.z = sw * 0.5; legs[1].rotation.z = -sw * 0.5;
+      arms[0].rotation.z = -sw * 0.35; arms[1].rotation.z = sw * 0.35;
+      walker.position.y += Math.abs(Math.cos(s * 6.5)) * 0.35;
     } else if(active === bike){
-      bike.rotation.z = Math.sin(time * 3) * 0.05;
+      bike.rotation.z = Math.sin(s * 1.2) * 0.04;
+    }
+  }
+
+  /* does this line of points come within reach of a vehicle's road? */
+  function meets(pts, m){
+    if(m.clear) return false;
+    var P = m.path.p;
+    for(var i=0; i<pts.length; i++) for(var j=0; j<P.length; j++)
+      if(Math.abs(pts[i][0]-P[j][0]) < 9 && Math.abs(pts[i][1]-P[j][1]) < 9) return true;
+    return false;
+  }
+  function samples(c){ return c.getSpacedPoints(60).map(function(v){ return [v.x, v.z]; }); }
+  var routePts = [];
+  function nextLap(){
+    mode = (mode + 1) % 3;
+    travellerFade.forEach(function(f){ f(0); });
+    active = travellers[mode];
+    /* a route that stays clear of the buses on the road: nearer the middle if possible */
+    var busy = outNow(), pick = null;
+    [[-2,1], [-5,-2,1]].some(function(RX){
+      for(var t=0; t<60 && !pick; t++){
+        var cand = newRoute(mode === 2, RX, [-6,0,3,6]);
+        var c = new THREE.CatmullRomCurve3(cand, false, 'catmullrom', 0.03), sp = samples(c);
+        if(!busy.some(function(m){ return meets(sp, m); })) pick = cand;
+      }
+      return pick;
+    });
+    useRoute(pick || newRoute(mode === 2, [-2,1], [-6,0,3,6]));
+    routePts = samples(curve);
+  }
+  /* two out at a time: when one leaves, the next that won't meet the route or the other sets off */
+  function sendPublic(){
+    var busy = outNow();
+    if(busy.length >= 2 || s < nextOutAt) return;
+    for(var k=1; k<=movers.length; k++){
+      var m = movers[(turn + k) % movers.length];
+      if(!m.done) continue;
+      if(meets(routePts, m)) continue;
+      if(busy.some(function(b){ return !b.clear && !m.clear; })) continue;   // one bus at a time: their roads cross
+      turn = (turn + k) % movers.length;
+      m.enter();
+      nextOutAt = s + 5 + Math.random()*4;                  // a little gap before the next one
+      return;
     }
   }
 
@@ -652,8 +1395,8 @@ footer a:hover{color:var(--purple)}
     renderer.setSize(w, h, false);
     camera.aspect = w/h;
     var narrow = w < 900;
-    camera.position.set(narrow ? 14 : 62, narrow ? 150 : 86, narrow ? 150 : 104);
-    camera.lookAt(narrow ? 0 : -26, 0, narrow ? 0 : 4);
+    camera.position.set(narrow ? 20 : 66, narrow ? 160 : 88, narrow ? 150 : 108);
+    camera.lookAt(narrow ? 6 : -22, 0, narrow ? 0 : 2);
     camera.updateProjectionMatrix();
   }
   layout();
@@ -667,47 +1410,66 @@ footer a:hover{color:var(--purple)}
     });
   }
 
-  var t = 0, running = true, lap = -1;
-  document.addEventListener('visibilitychange', function(){ running = !document.hidden; });
+  /* timing, in seconds: the route draws itself slowly, then rests before the next one */
+  var DRAW_S = 13, REST_S = 4;
+  var s = 0, lapAt = 0, last = performance.now();
+  var visible = true, inView = true;
+  document.addEventListener('visibilitychange', function(){ visible = !document.hidden; last = performance.now(); });
+  new IntersectionObserver(function(es){ inView = es[0].isIntersecting; last = performance.now(); }).observe(canvas);
 
-  function frame(){
+  nextLap();
+  sendPublic();
+
+  if(reduce){
+    /* one still picture: the whole route drawn, everyone at a stop */
+    tubeMat.uniforms.uProgress.value = 1;
+    placeTraveller(0.6, 0);
+    travellerFade[mode](1);
+    var m0 = outNow()[0];
+    if(m0){ m0.c = m0.pts[0] + (m0.pts[1]-m0.pts[0])*0.4; m0.vis = 1; m0.fade(1); m0.place(m0.c, 0); }
+    world.rotation.y = -0.34;
+    renderer.render(scene, camera);
+    window.addEventListener('resize', function(){ renderer.render(scene, camera); });
+    return;
+  }
+
+  function frame(now){
     requestAnimationFrame(frame);
-    if(!running) return;
+    if(!visible || !inView){ last = now; return; }
+    var dt = Math.min(0.05, (now - last)/1000);
+    last = now; s += dt;
 
-    if(reduce){
-      tubeMat.uniforms.uProgress.value = 1;
-      placeTraveller(0.999, 0);
-      renderer.render(scene, camera);
-      return;
-    }
-
-    t += 0.0042;
-    var thisLap = Math.floor(t/1.34);
-    if(thisLap !== lap){
-      lap = thisLap;
-      mode = (mode + 1) % 3;
-      travellers.forEach(function(g){ g.visible = false; });
-      active = travellers[mode];
-      active.visible = true;
-      newRoute(mode === 2);
-    }
-
-    var p = Math.min((t % 1.34)/1.0, 1);
+    if(s - lapAt > DRAW_S + REST_S){ lapAt = s; nextLap(); }
+    var lapT = s - lapAt;
+    var p = Math.min((s - lapAt)/DRAW_S, 1);
     var eased = p<0.5 ? 2*p*p : 1-Math.pow(-2*p+2,2)/2;
     tubeMat.uniforms.uProgress.value = eased;
-    placeTraveller(Math.max(0.0005, Math.min(eased, 0.999)), t);
+    placeTraveller(Math.max(0.0005, Math.min(eased, 0.999)), s);
+    /* the traveller fades in at the start, and fades away once it has arrived; the pin fades away
+       just before it gets there, so the two never overlap */
+    var tA = Math.min(1, lapT/0.9, Math.max(0, 1 - (lapT - DRAW_S)/1.4));
+    travellerFade[mode](tA);
+    var near = Math.max(0, Math.min(1, (eased - 0.8)/0.16));
+    pin.material.opacity = Math.min(1, lapT/0.9) * (1 - near*near*(3-2*near));
+    pin.visible = pin.material.opacity > 0.003;
 
-    pin.position.y = 6.4 + Math.sin(t*9)*0.7;
-    pin.rotation.y += 0.02;
-    shadow.material.opacity = eased >= 1 ? 0.1 : 0.2;
+    sendPublic();
+    movers.forEach(function(m){ m.update(dt, s); });
+    /* the start dot: shows as the route begins, fades with it at the end */
+    var dA = Math.min(1, lapT/0.6, Math.max(0, 1 - (lapT - DRAW_S - REST_S + 1.2)/1.2));
+    ringM.opacity = dA; dotM.opacity = dA; startDot.visible = dA > 0.003;
 
-    mx += (tx-mx)*0.045; my += (ty-my)*0.045;
-    world.rotation.y = -0.34 + Math.sin(t*0.5)*0.07 + mx*0.3;
-    world.rotation.x = -0.06 + my*0.08;
+    pin.position.y = 6 + Math.sin(s*1.8)*0.5;
+    pin.rotation.y += dt*0.5;
+    shadow.material.opacity = 0.18 * tA;
+
+    mx += (tx-mx)*0.03; my += (ty-my)*0.03;
+    world.rotation.y = -0.34 + Math.sin(s*0.06)*0.06 + mx*0.22;
+    world.rotation.x = -0.06 + my*0.06;
 
     renderer.render(scene, camera);
   }
-  frame();
+  requestAnimationFrame(frame);
 })();
 </script>
 </body>
