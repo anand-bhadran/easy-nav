@@ -927,8 +927,8 @@ footer a:hover{color:var(--purple)}
   var JETTIES = [-30, 30];
   var jettyM = mat(0xe6dccb);
   JETTIES.forEach(function(jz){
-    bx(jettyM, 6, 0.6, 5, RIVER_X-RIVER_W/2+2.2, 0.5, jz);
-    bx(flat(0x7cb3dd), 0.9, 0.5, 5.2, RIVER_X-RIVER_W/2+5.6, 0.62, jz);
+    bx(jettyM, 3.2, 0.6, 4, RIVER_X-RIVER_W/2+1, 0.5, jz);                 // a small landing, just off the bank
+    bx(flat(0x7cb3dd), 0.7, 0.5, 4.2, RIVER_X-RIVER_W/2+2.85, 0.62, jz);
   });
 
   scene.add(new THREE.AmbientLight(0xffffff, 0.9));
