@@ -323,6 +323,14 @@ h2{font-size:clamp(2rem,4.2vw,2.9rem);letter-spacing:-.025em}
 .closer .btn-ghost:hover{border-color:#fff;color:#fff}
 .closer .wrap{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:30px}
 .closer h2{max-width:20rem}
+/* "Join the test group": a small menu with the address, to write an email or copy it */
+.join{position:relative;z-index:20}
+.join-btn{cursor:pointer;font-family:inherit}
+.join-menu{position:absolute;left:0;top:calc(100% + 10px);width:260px;padding:10px;border-radius:16px;background:#fff;border:1px solid var(--line);box-shadow:0 18px 40px -20px rgba(27,27,24,.55);display:grid;gap:4px;text-align:left}
+.join-menu[hidden]{display:none}
+.join-addr{padding:6px 10px 8px;font-size:13.5px;font-weight:700;color:var(--muted);border-bottom:1px solid var(--line);margin-bottom:4px;word-break:break-all}
+.join-act{display:flex;align-items:center;gap:10px;width:100%;padding:10px;border-radius:10px;border:0;background:none;color:var(--text);font:700 14.5px var(--body);text-decoration:none;cursor:pointer;text-align:left}
+.join-act:hover{background:#f4f1ff;color:var(--purple)}
 footer{border-top:1px solid var(--line);background:#fff;padding:30px 0;font-size:15px;color:var(--muted)}
 footer .wrap{display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between}
 footer a{color:var(--muted);text-decoration:none}
@@ -678,7 +686,16 @@ footer a:hover{color:var(--purple)}
       <p class="lede" style="margin-top:12px">Testing is small and invite-only for now. Ask to join, or send us a place you'd like it to know better.</p>
     </div>
     <div class="cta-row">
-      <a class="btn btn-primary" href="mailto:easynav.labs@gmail.com?subject=Easy%20Nav%20test%20group">Join the test group</a>
+      <div class="join">
+        <button class="btn btn-primary join-btn" type="button" aria-expanded="false" aria-controls="join-menu">Join the test group</button>
+        <div class="join-menu" id="join-menu" hidden>
+          <p class="join-addr" data-join-text></p>
+          <a class="join-act" data-join-link href="#">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg> Write an email</a>
+          <button class="join-act" type="button" data-join-copy>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg> <span>Copy address</span></button>
+        </div>
+      </div>
       <a class="btn btn-ghost" href="https://www.linkedin.com/company/easy-nav/" target="_blank" rel="noopener">Easy Nav on LinkedIn</a>
     </div>
   </div>
@@ -687,7 +704,7 @@ footer a:hover{color:var(--purple)}
 <footer>
   <div class="wrap">
     <span><strong style="color:var(--text)">Easy Nav</strong> — Your map. Your way. · Made by <a class="maker" href="https://anand-bhadran.github.io/"><img src="maker.jpg" width="24" height="24" alt="">Anand Bhadran</a></span>
-    <span><a href="mailto:easynav.labs@gmail.com">easynav.labs@gmail.com</a> · <a href="https://www.linkedin.com/company/easy-nav/" target="_blank" rel="noopener">LinkedIn</a> · © 2026</span>
+    <span><a href="https://www.linkedin.com/company/easy-nav/" target="_blank" rel="noopener">LinkedIn</a> · © 2026</span>
     <span class="credits">Map data © OpenStreetMap contributors · Street map by OpenFreeMap · Satellite imagery © Esri</span>
   </div>
 </footer>
@@ -1510,6 +1527,26 @@ footer a:hover{color:var(--purple)}
     renderer.render(scene, camera);
   }
   requestAnimationFrame(frame);
+})();
+</script>
+<script>
+/* the test group's address, put together here rather than written in the page, to keep spam bots off it */
+(function(){
+  var EMAIL = ['easynav.labs', 'gmail.com'].join('@');
+  var btn = document.querySelector('.join-btn'), menu = document.getElementById('join-menu');
+  if(!btn || !menu) return;
+  menu.querySelector('[data-join-text]').textContent = EMAIL;
+  menu.querySelector('[data-join-link]').href = 'mailto:' + EMAIL + '?subject=' + encodeURIComponent('Easy Nav test group');
+  function set(open){ menu.hidden = !open; btn.setAttribute('aria-expanded', open); }
+  btn.addEventListener('click', function(e){ e.stopPropagation(); set(menu.hidden); });
+  document.addEventListener('click', function(e){ if(!menu.contains(e.target)) set(false); });
+  document.addEventListener('keydown', function(e){ if(e.key === 'Escape') set(false); });
+  menu.querySelector('[data-join-copy]').addEventListener('click', function(){
+    var label = this.querySelector('span');
+    function done(ok){ label.textContent = ok ? 'Copied' : EMAIL; setTimeout(function(){ label.textContent = 'Copy address'; }, 1800); }
+    if(navigator.clipboard) navigator.clipboard.writeText(EMAIL).then(function(){ done(true); }, function(){ done(false); });
+    else done(false);
+  });
 })();
 </script>
 </body>
