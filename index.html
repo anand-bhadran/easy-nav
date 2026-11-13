@@ -703,7 +703,7 @@ footer a:hover{color:var(--purple)}
 
 <footer>
   <div class="wrap">
-    <span><strong style="color:var(--text)">Easy Nav</strong> — Your map. Your way. · Made by <a class="maker" href="https://anand-bhadran.github.io/"><img src="maker.jpg" width="24" height="24" alt="">Anand Bhadran</a></span>
+    <span><strong style="color:var(--text)">Easy Nav</strong> — Your map. Your way. · Made by <a class="maker" href="https://anand-bhadran.github.io/" target="_blank" rel="noopener"><img src="maker.jpg" width="24" height="24" alt="">Anand Bhadran</a></span>
     <span><a href="https://www.linkedin.com/company/easy-nav/" target="_blank" rel="noopener">LinkedIn</a> · © 2026</span>
     <span class="credits">Map data © OpenStreetMap contributors · Street map by OpenFreeMap · Satellite imagery © Esri</span>
   </div>
@@ -1061,6 +1061,21 @@ footer a:hover{color:var(--purple)}
     axle(g, [4.4,-4.4], 2.2, 1.2, .9);
     return g;
   }
+  function makeTruck(){
+    var g = new THREE.Group();
+    var cab = mat(0xef8f46, {roughness:.45}), box = mat(0xece5d3, {roughness:.6}), rib = mat(0xd6ccb4);
+    rb(g, DARK, 13.6, .6, 3.4, .2, -.4, 1.4, 0);                       // chassis
+    rb(g, cab, 3.8, 4.2, 4.6, .9, 5.3, 3.3, 0);                        // cab
+    rb(g, GLASS, .4, 1.7, 4.0, .4, 7.05, 4.2, 0);                      // windscreen
+    rb(g, GLASS, 1.6, 1.3, 4.66, .3, 5.4, 4.3, 0);                     // side windows
+    rb(g, DARK, .3, 1.2, 3.0, .2, 7.15, 2.3, 0);                       // grille
+    rb(g, GREY, .5, .55, 4.7, .2, 7.25, 1.3, 0);                       // bumper
+    [1.7,-1.7].forEach(function(z){ rb(g, LAMP, .2, .5, .7, .15, 7.22, 2.3, z); rb(g, TAIL, .2, .5, .5, .15, -7.1, 1.9, z); });
+    rb(g, box, 10.2, 4.9, 4.7, .35, -1.9, 4.1, 0);                     // container
+    for(var x=-6.4; x<=2.6; x+=1.5) rb(g, rib, .22, 4.6, 4.78, .08, x, 4.1, 0);
+    axle(g, [5.4, -2.6, -5.0], 2.2, 1.15, .9);
+    return g;
+  }
   function makeBoat(){
     var g = new THREE.Group();
     var outline = [[-6,-2.5],[3,-2.5],[5.4,-1.3],[6.6,0],[5.4,1.3],[3,2.5],[-6,2.5]];
@@ -1201,7 +1216,9 @@ footer a:hover{color:var(--purple)}
     new Mover({model:makeTrain(), path:metroPath, cars:true, y:DECK_Y, trim:[26,26], stops:[], speed:7, clear:true}),
     new Mover({model:makeBus(), path:new Path(SH1), trim:[8,8], stops:[], lane:1.4, speed:6}),
     new Mover({model:makeBoat(), path:new Path(line(BOAT_X,-EDGE, BOAT_X,EDGE, 8)), trim:[8,8], stops:[], speed:5, bob:0.18, clear:true}),
-    new Mover({model:makeBus(), path:new Path(SH2), trim:[8,8], stops:[], lane:1.4, speed:6})
+    new Mover({model:makeBus(), path:new Path(SH2), trim:[8,8], stops:[], lane:1.4, speed:6}),
+    /* a truck on the national highway, up over the metro on the flyover */
+    new Mover({model:makeTruck(), path:new Path(line(NH_X*S,-EDGE, NH_X*S,EDGE, 2)), y:0.15, yAt:function(x, z){ return flyY(z); }, trim:[6,8], stops:[], lane:1.3, speed:7})
   ];
   var turn = -1, nextOutAt = 0;
   function outNow(){ return movers.filter(function(m){ return !m.done; }); }
