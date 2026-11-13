@@ -794,7 +794,7 @@ footer a:hover{color:var(--purple)}
   /* roads. AVX run along z, AVZ along x (in blocks). One national highway (yellow), one state
      highway (green), the rest pale grey, as the app draws them */
   var AVX = [-14,-11,-8,-5,-2,1,4], AVZ = [-15,-12,-9,-6,-3,0,3,6,9,12,15];
-  var NH_X = 4, SH_Z = 3, METRO_Z = -3;
+  var NH_X = 4, METRO_Z = -3;
   var WEST = -EDGE, BANK = RIVER_X - RIVER_W/2 - 1;
   /* the metro runs over its avenue in the west, then bends gently to the left as it heads east */
   var BEND_FROM = -40, BEND_K = 0.0028;
@@ -842,11 +842,14 @@ footer a:hover{color:var(--purple)}
     for(var k=1; k<=n; k++){ var a = a0 + (a1-a0)*k/n; out.push([cx + r*Math.sin(a), cz + r*Math.cos(a)]); }
     return out;
   }
-  /* state highway 1: in from the west along its avenue, then a left turn, north to the far edge */
-  var SH1 = line(-EDGE, SH_Z*S, 0, SH_Z*S, 4).concat(arc(0, SH_Z*S-8, 8, 0, Math.PI/2, 12)).concat(line(8, SH_Z*S-8, 8, -EDGE, 4).slice(1));
-  /* state highway 2, in the north: in from the west, then a left turn, north to the far edge */
-  var SH2 = line(-EDGE, -9*S, -24, -9*S, 4).concat(arc(-24, -10*S, 8, 0, Math.PI/2, 12)).concat(line(-16, -10*S, -16, -EDGE, 4).slice(1));
-  [SH1, SH2].forEach(function(pts){ ribbon(pts, 6.4, 0xc5dfa8, 0.45); ribbon(pts, 4.8, 0xdeefc8, 0.55); });
+  /* the state highway, well away from the national highway: in from the far edge through the middle of the
+     city, under the metro and two blocks on past it, then a curve onto the cross street and away alongside
+     the metro to the far west */
+  var SH_X = -2, SH_Z = 0;
+  var SH = line(SH_X*S, -EDGE, SH_X*S, SH_Z*S - 8, 4)
+    .concat(arc(SH_X*S - 8, SH_Z*S - 8, 8, Math.PI/2, 0, 12))
+    .concat(line(SH_X*S - 8, SH_Z*S, -EDGE, SH_Z*S, 4).slice(1));
+  ribbon(SH, 6.4, 0xc5dfa8, 0.45); ribbon(SH, 4.8, 0xdeefc8, 0.55);
 
   /* buildings: soft white blocks, a few in the app's lavender. Avenues and the river stay clear */
   var bWhite = mat(0xfbfaf6), bWarm = mat(0xf1eee6), bLav = mat(0xd9d3fb);
@@ -1076,6 +1079,21 @@ footer a:hover{color:var(--purple)}
     axle(g, [5.4, -2.6, -5.0], 2.2, 1.15, .9);
     return g;
   }
+  function makeAuto(){
+    var g = new THREE.Group();
+    var green = mat(0x2fa35a, {roughness:.45}), yellow = mat(0xf4c430, {roughness:.5}), black = mat(0x1f2024, {roughness:.7});
+    rb(g, green, 4.6, 2.2, 3.9, .7, -.9, 1.95, 0);                     // body over the back wheels
+    put(prof([[1.2,0],[3.4,0],[3.9,.9],[3.3,2.6],[1.4,2.9],[1.2,2.9]], 2.4), green, 0, .85, 0, g);   // the narrow front
+    rb(g, GLASS, .25, 1.6, 2.5, .2, 2.5, 4.15, 0, -0.18);              // windscreen
+    rb(g, yellow, 5.4, .5, 4.1, .3, -.5, 5.3, 0);                      // canopy
+    rb(g, yellow, .4, 2.3, 3.9, .2, -3.0, 4.05, 0);                    // back of the canopy
+    [1.85,-1.85].forEach(function(z){ rb(g, black, .2, 2.4, .2, .05, 1.9, 4.15, z); });   // canopy posts
+    rb(g, black, 1.5, .9, 3.4, .3, -1.7, 3.5, 0);                      // seat
+    put(sphere(.32), LAMP, 3.95, 2.3, 0, g);                           // headlamp
+    wheel(g, 3.0, 0, .85, .7);
+    axle(g, [-1.9], 1.95, .85, .7);
+    return g;
+  }
   function makeBoat(){
     var g = new THREE.Group();
     var outline = [[-6,-2.5],[3,-2.5],[5.4,-1.3],[6.6,0],[5.4,1.3],[3,2.5],[-6,2.5]];
@@ -1174,8 +1192,26 @@ footer a:hover{color:var(--purple)}
     this.pose(this.g, c, this.lane);
     if(this.bob){ this.g.position.y += Math.sin(s*1.3)*this.bob; this.g.rotation.x = Math.sin(s*0.9)*0.03; }
   };
+  /* A short appearance instead: it fades in at a spot along its way (from), moves on for a few seconds,
+     and fades out while still moving */
+  var BRIEF_IN_S = 0.9, BRIEF_OUT_S = 2.0;          // (the fade out slower and softer than the fade in)
+  Mover.prototype.brief = function(from, dir, showS){
+    this.state = 'brief'; this.c = from; this.dir = dir; this.timer = showS;
+    this.vis = 0; this.show = true; this.done = false;
+  };
   Mover.prototype.update = function(dt, s){
     if(this.done) return;
+    if(this.state === 'brief'){
+      this.vis = Math.max(0, Math.min(1, this.vis + (this.show ? dt/BRIEF_IN_S : -dt/BRIEF_OUT_S)));
+      var v = this.vis;
+      this.fade(this.show ? v*v*(3-2*v) : v*v*v*(v*(v*6-15)+10));   // (an even gentler curve going out)
+      this.timer -= dt;
+      if(this.timer <= 0) this.show = false;
+      if(!this.show && this.vis <= 0){ this.done = true; this.fade(0); return; }
+      this.c += this.dir*this.speed*dt;
+      this.place(this.c, s);
+      return;
+    }
     this.vis = Math.max(0, Math.min(1, this.vis + (this.show ? dt : -dt)/FADE_S));
     this.fade(this.vis*this.vis*(3-2*this.vis));
     this.timer -= dt;
@@ -1209,34 +1245,34 @@ footer a:hover{color:var(--purple)}
   var metroPath = new Path((function(){ var a = []; for(var x=-EDGE; x<=EDGE; x+=2) a.push([x, metroZ(x)]); return a; })());
   var BOAT_X = RIVER_X + 1.5;
 
-  /* Public transport, running without stops so there's always something on the move. Two are out at
-     a time, alongside the traveller; a bus sets off only where it won't meet the route or the other one.
-     The metro is up on its line and the boat on the river, so they never meet anything. */
+  /* Public transport and the city's traffic: one at a time, at random, each a few seconds on screen
+     (see sendPublic). The metro is up on its line and the boat on the river, so they never meet anything. */
   var movers = [
     new Mover({model:makeTrain(), path:metroPath, cars:true, y:DECK_Y, trim:[26,26], stops:[], speed:7, clear:true}),
-    new Mover({model:makeBus(), path:new Path(SH1), trim:[8,8], stops:[], lane:1.4, speed:6}),
+    new Mover({model:makeBus(), path:new Path(SH), trim:[8,8], stops:[], lane:1.4, speed:6}),
     new Mover({model:makeBoat(), path:new Path(line(BOAT_X,-EDGE, BOAT_X,EDGE, 8)), trim:[8,8], stops:[], speed:5, bob:0.18, clear:true}),
-    new Mover({model:makeBus(), path:new Path(SH2), trim:[8,8], stops:[], lane:1.4, speed:6}),
+    /* an auto on one of the grey avenues */
+    new Mover({model:makeAuto(), path:new Path(line(-5*S,-EDGE, -5*S,EDGE, 8)), trim:[6,6], stops:[], lane:1.3, speed:5.5}),
     /* a truck on the national highway, up over the metro on the flyover */
     new Mover({model:makeTruck(), path:new Path(line(NH_X*S,-EDGE, NH_X*S,EDGE, 2)), y:0.15, yAt:function(x, z){ return flyY(z); }, trim:[6,8], stops:[], lane:1.3, speed:7})
   ];
-  var turn = -1, nextOutAt = 0;
+  var lastOut = null, emptyAt = -99, gap = 0;
   function outNow(){ return movers.filter(function(m){ return !m.done; }); }
 
   /* ---- the route, redrawn between a new pair of corners each time it finishes ---- */
   var tubeMat = new THREE.ShaderMaterial({
     transparent:true,
-    uniforms:{ uProgress:{value:0}, uA:{value:new THREE.Color(0x6c5ce7)}, uB:{value:new THREE.Color(0x8f7cf0)} },
+    uniforms:{ uProgress:{value:0}, uAlpha:{value:1}, uA:{value:new THREE.Color(0x6c5ce7)}, uB:{value:new THREE.Color(0x8f7cf0)} },
     vertexShader:'varying vec2 vUv; void main(){ vUv=uv; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0); }',
     fragmentShader:[
-      'varying vec2 vUv; uniform float uProgress; uniform vec3 uA; uniform vec3 uB;',
+      'varying vec2 vUv; uniform float uProgress; uniform float uAlpha; uniform vec3 uA; uniform vec3 uB;',
       'void main(){',
       '  if(vUv.x > uProgress) discard;',
       '  vec3 col = mix(uA, uB, vUv.x);',
-      '  float head = smoothstep(uProgress-0.05, uProgress, vUv.x);',
+      '  float head = smoothstep(uProgress-0.05, uProgress, vUv.x) * step(uProgress, 0.999);',
       '  col += head * 0.18;',
       '  float edge = smoothstep(0.0,0.42,abs(vUv.y-0.5)*2.0);',
-      '  gl_FragColor = vec4(col, 0.82 + 0.18*(1.0-edge));',
+      '  gl_FragColor = vec4(col, (0.82 + 0.18*(1.0-edge)) * uAlpha);',
       '}'
     ].join('\n')
   });
@@ -1259,12 +1295,16 @@ footer a:hover{color:var(--purple)}
     geo.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2));
     geo.setIndex(idx); return geo;
   }
-  /* the start: a white dot in a purple ring, lying on the road */
-  var startDot = new THREE.Group();
-  var ringM = flat(0x6c5ce7, 1), dotM = flat(0xffffff, 1);
-  var sdRing = new THREE.Mesh(new THREE.CircleGeometry(3.1, 28), ringM); sdRing.rotation.x = -Math.PI/2; sdRing.position.y = 0.8;
-  var sdDot = new THREE.Mesh(new THREE.CircleGeometry(1.7, 28), dotM); sdDot.rotation.x = -Math.PI/2; sdDot.position.y = 0.85;
-  startDot.add(sdRing, sdDot); world.add(startDot);
+  /* both ends: a small white dot in a purple ring, lying on the road (at the end, under the pin) */
+  var ringM = flat(0x6c5ce7, 1), endDotM = flat(0xffffff, 1);
+  var ringGeo = new THREE.CircleGeometry(2.2, 28), endDotGeo = new THREE.CircleGeometry(1.2, 28);
+  function endCircle(){
+    var g = new THREE.Group();
+    var ring = new THREE.Mesh(ringGeo, ringM); ring.rotation.x = -Math.PI/2; ring.position.y = 0.8;
+    var dot = new THREE.Mesh(endDotGeo, endDotM); dot.rotation.x = -Math.PI/2; dot.position.y = 0.85;
+    g.add(ring, dot); world.add(g); return g;
+  }
+  var startDot = endCircle(), endDot = endCircle();
 
   /* the destination: a classic map pin (round head, pointed tip, rounded edges) in the app's purple,
      with a white dot, facing the viewer and gently bobbing */
@@ -1397,6 +1437,7 @@ footer a:hover{color:var(--purple)}
     startDot.position.set(pts[0].x, 0, pts[0].z);
     var e = curve.getPointAt(1);
     pin.position.set(e.x, 0, e.z);
+    endDot.position.set(e.x, 0, e.z);
   }
 
   function placeTraveller(at, s){
@@ -1442,19 +1483,36 @@ footer a:hover{color:var(--purple)}
     useRoute(pick || newRoute(mode === 2, [-2,1], [-6,0,3,6]));
     routePts = samples(curve);
   }
-  /* two out at a time: when one leaves, the next that won't meet the route or the other sets off */
+  /* One at a time, chosen at random (never the same twice running): it fades in somewhere on screen along
+     its road, line or river, moves on for a few seconds, and fades out; a moment later, the next */
+  var SHOW_ONE_S = 3;
+  var onScreen = new THREE.Vector3();
+  function seen(x, y, z){
+    world.updateMatrixWorld();
+    onScreen.set(x, y, z); world.localToWorld(onScreen); onScreen.project(camera);
+    var left = (canvas.clientWidth || window.innerWidth) < 900 ? -0.85 : 0.02;   // (on a wide screen the words cover the left)
+    return onScreen.x > left && onScreen.x < 0.92 && onScreen.y > -0.8 && onScreen.y < 0.78;
+  }
   function sendPublic(){
-    var busy = outNow();
-    if(busy.length >= 2 || s < nextOutAt) return;
-    for(var k=1; k<=movers.length; k++){
-      var m = movers[(turn + k) % movers.length];
-      if(!m.done) continue;
-      if(meets(routePts, m)) continue;
-      if(busy.some(function(b){ return !b.clear && !m.clear; })) continue;   // one bus at a time: their roads cross
-      turn = (turn + k) % movers.length;
-      m.enter();
-      nextOutAt = s + 5 + Math.random()*4;                  // a little gap before the next one
-      return;
+    if(movers.some(function(m){ return !m.done; })){ emptyAt = null; return; }
+    if(emptyAt == null){ emptyAt = s; gap = 0.6 + Math.random()*1.2; }
+    if(s - emptyAt < gap) return;
+    var pool = movers.filter(function(m){ return m !== lastOut; }).sort(function(){ return Math.random() - 0.5; });
+    for(var k=0; k<pool.length; k++){
+      var m = pool[k], run = m.speed*(SHOW_ONE_S + BRIEF_OUT_S), lo = 14, hi = m.path.L - 14 - run;
+      for(var tries=0; tries<16 && hi > lo; tries++){
+        var dir = Math.random() < 0.5 ? 1 : -1, a = lo + Math.random()*(hi - lo);
+        var from = dir > 0 ? a : a + run, to = dir > 0 ? a + run : a;
+        var p1 = m.path.at(from), p2 = m.path.at(to);
+        if(!seen(p1.x, m.y, p1.z) || !seen(p2.x, m.y, p2.z)) continue;
+        if(!m.clear && routePts.some(function(q){
+          for(var d = a; d <= a + run; d += 3){ var pp = m.path.at(d); if(Math.abs(q[0]-pp.x) < 9 && Math.abs(q[1]-pp.z) < 9) return true; }
+          return false;
+        })) continue;                                        // (not across the route)
+        m.brief(from, dir, SHOW_ONE_S);
+        lastOut = m;
+        return;
+      }
     }
   }
 
@@ -1480,8 +1538,10 @@ footer a:hover{color:var(--purple)}
     });
   }
 
-  /* timing, in seconds: the route draws itself slowly, then rests before the next one */
-  var DRAW_S = 13, REST_S = 4;
+  /* timing, in seconds, as in a navigation app: the whole route shows first (drawn in quickly), then the
+     traveller goes along it; once there, the route fades away, and a short rest before the next one */
+  var SHOW_S = 1.4, SET_OFF_S = 0.5, DRAW_S = 13, GONE_S = 1.6, REST_S = 1.6;
+  var ARRIVE_S = SHOW_S + SET_OFF_S + DRAW_S, LAP_S = ARRIVE_S + 0.4 + GONE_S + REST_S;
   var s = 0, lapAt = 0, last = performance.now();
   var visible = true, inView = true;
   document.addEventListener('visibilitychange', function(){ visible = !document.hidden; last = performance.now(); });
@@ -1509,15 +1569,19 @@ footer a:hover{color:var(--purple)}
     var dt = Math.min(0.05, (now - last)/1000);
     last = now; s += dt;
 
-    if(s - lapAt > DRAW_S + REST_S){ lapAt = s; nextLap(); }
+    if(s - lapAt > LAP_S){ lapAt = s; nextLap(); }
     var lapT = s - lapAt;
-    var p = Math.min((s - lapAt)/DRAW_S, 1);
+    var show = Math.min(lapT/SHOW_S, 1);
+    tubeMat.uniforms.uProgress.value = 1 - Math.pow(1 - show, 3);      // the whole route, quickly
+    var routeA = 1 - Math.max(0, Math.min(1, (lapT - ARRIVE_S - 0.4)/GONE_S));
+    tubeMat.uniforms.uAlpha.value = routeA;                             // …and gone again after arriving
+    tube.visible = routeA > 0.003;
+    var p = Math.max(0, Math.min((lapT - SHOW_S - SET_OFF_S)/DRAW_S, 1));
     var eased = p<0.5 ? 2*p*p : 1-Math.pow(-2*p+2,2)/2;
-    tubeMat.uniforms.uProgress.value = eased;
-    placeTraveller(Math.max(0.0005, Math.min(eased, 0.999)), s);
-    /* the traveller fades in at the start, and fades away once it has arrived; the pin fades away
-       just before it gets there, so the two never overlap */
-    var tA = Math.min(1, lapT/0.9, Math.max(0, 1 - (lapT - DRAW_S)/1.4));
+    placeTraveller(Math.max(0.0005, Math.min(eased, 0.999)), p > 0 ? s : 0);
+    /* the traveller fades in at the start, waiting for the route, and fades away once it has arrived; the
+       pin fades away just before it gets there, so the two never overlap */
+    var tA = Math.min(1, lapT/0.9, Math.max(0, 1 - (lapT - ARRIVE_S)/1.4));
     travellerFade[mode](tA);
     var near = Math.max(0, Math.min(1, (eased - 0.8)/0.16));
     pinAlpha = Math.min(1, lapT/0.9) * (1 - near*near*(3-2*near));
@@ -1526,8 +1590,8 @@ footer a:hover{color:var(--purple)}
     sendPublic();
     movers.forEach(function(m){ m.update(dt, s); });
     /* the start dot: shows as the route begins, fades with it at the end */
-    var dA = Math.min(1, lapT/0.6, Math.max(0, 1 - (lapT - DRAW_S - REST_S + 1.2)/1.2));
-    ringM.opacity = dA; dotM.opacity = dA; startDot.visible = dA > 0.003;
+    var dA = Math.min(1, lapT/0.6) * routeA;
+    ringM.opacity = dA; endDotM.opacity = dA; startDot.visible = endDot.visible = dA > 0.003;
 
     pinHead.position.y = 1.0 + Math.sin(s*1.8)*0.45;
     ripples.forEach(function(r){                              // each ring grows, fading in then out
