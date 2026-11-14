@@ -1,6 +1,6 @@
 # Easy Nav App
 
-**A calm, clutter-free Android navigation app with big, readable text.**
+**A calm, clutter-free navigation app for Android and the web, with big, readable text.**
 
 Easy Nav is an Android navigation app I designed and built for people who find the usual map apps too busy. It shows only what matters, uses large readable text and clear words, never loses anything by accident, and follows your own saved routes turn by turn.
 
@@ -45,6 +45,7 @@ Easy Nav is an Android navigation app I designed and built for people who find t
 | **Maps** | Leaflet with MapLibre GL vector roads; a custom 3D tilt and rotation layer |
 | **Routing** | OSRM (with alternatives and bearings), Photon and Nominatim search |
 | **Android** | Capacitor 7, plus native Java plugins for a foreground navigation service, picture-in-picture and alarms |
+| **Web** | The same Vue codebase also builds a browser version (in testing) |
 | **Backend** | Python (FastAPI) for shared saved places |
 | **Website** | A three.js animated hero on GitHub Pages |
 
