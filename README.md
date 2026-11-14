@@ -27,7 +27,7 @@ Easy Nav is an Android navigation app I designed and built for people who find t
 - **Picture-in-picture:** the next turn stays on screen over other apps.
 - Background navigation with a notification, and a keep-awake screen.
 
-**A map that stays simple**
+**A map that stays uncluttered**
 - Only what matters: smaller roads fade when zoomed out, and only one saved route shows at a time.
 - **Forgiving search** that handles spelling variants of local place names and finger slips.
 - Saved places, homes and routes, each in a few taps; deleting always takes two taps.
