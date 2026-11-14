@@ -40,7 +40,7 @@
 <script>
   // Everything about the way is in the part of the address after #, which browsers never send to a
   // website: it stays on this phone. It's only passed on to the app, and never shown here.
-  var code = (location.hash.match(/^#(EASYNAV1:[A-Za-z0-9_-]{10,20000})$/) || [])[1];
+  var code = (location.hash.match(/^#((?:EASYNAV1|EN2):[A-Za-z0-9_-]{10,20000})$/) || [])[1]; // (EN2: the shorter links)
   var android = /Android/i.test(navigator.userAgent);
   var show = function (id) { document.getElementById(id).hidden = false; };
   if (!code) show('bad');
